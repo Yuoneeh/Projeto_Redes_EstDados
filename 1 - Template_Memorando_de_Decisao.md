@@ -7,7 +7,7 @@
 | Projeto integrador | `[Preditor de falhas em rede` |
 | Orientador(a) | `[Andrea Ono Sakai]` |
 | Data de entrega desta etapa | `[08/09]` |
-| Integrantes do grupo | `[Eduardo Felipe Braga Silva, Isaque Rodrigues Valim [INSIRA SEU NOME! (RETIRE OS COLCHETES)] ]` |
+| Integrantes do grupo | `[Eduardo Felipe Braga Silva, Isaque Rodrigues Valim , Ryan Catão De Paula (RETIRE OS COLCHETES)] ]` |
 
 ---
 
@@ -34,14 +34,20 @@ O projeto Archipelago (Ark) do CAIDA é uma infraestrutura de medição ativa qu
 
 <!-- O que foi encontrado sobre a API: autenticação, criação e consulta de medições. Cite a fonte de cada informação. -->
 
-- **Documentação consultada (link):** [ ]
-- **Autenticação exigida:** [ ]
-- **Como se cria uma medição:** [ ]
-- **Como se consultam os resultados:** [ ]
+- **Documentação consultada (link):** https://atlas.ripe.net/docs/apis/rest-api-manual/measurements/ (RIPE Atlas REST API Manual) e https://atlas.ripe.net/docs/apis/rest-api-manual/measurements/results
+- **Autenticação exigida:** É necessária uma conta gratuita na RIPE NCC. Para criar medições (não apenas consultar as já existentes), é preciso acessar a página de API Keys e gerar uma nova chave com a permissão "Create a new user defined measurement". Já para consultar resultados de medições públicas não é exigida nenhuma chave — uma chave separada só é necessária quando a medição é privada, com a permissão "download results of a measurement".
+- **Como se cria uma medição:** A criação é feita via requisição HTTP POST enviando um objeto JSON com a especificação da medição — tipo do teste (ping, traceroute, dns, sslcert, ntp ou http), alvo e outros parâmetros — junto com um objeto de "fonte" que define de quais sondas (probes) o teste vai partir. Essas sondas podem ser filtradas por país, ASN, prefixo de rede ou lista específica de IDs. É possível ainda agrupar várias medições numa única requisição (por exemplo, um ping e um traceroute juntos), fazendo com que comecem e terminem ao mesmo tempo e usem as mesmas sondas. Existem bibliotecas prontas, como a ripe.atlas.cousteau em Python, que encapsulam essas chamadas REST e facilitam a integração.
+- **Como se consultam os resultados:** Cada medição executada por uma sonda gera um resultado, e o objeto da medição traz um campo "result" com a URL que aponta direto para ele, no formato GET /api/v2/measurements/{id}/results/. A resposta é enviada em streaming: o back-end começa a mandar os dados assim que o primeiro resultado fica pronto, sem esperar montar a resposta inteira — algo importante quando uma medição de longa duração pode gerar centenas de milhares de resultados numa única consulta. É possível filtrar por janela de tempo com os parâmetros "start" e "stop" (timestamps Unix) e restringir a sondas específicas com "probe_ids".
 
 **Resumo do que foi encontrado:**
+A API do RIPE Atlas é um serviço REST v2 que permite tanto consultar mais de 12 mil sondas ativas espalhadas pelo mundo quanto criar medições próprias sob demanda. A grande vantagem em relação ao dataset estático da CAIDA é o controle total sobre origem, destino e frequência da coleta. Em contrapartida, a criação de medições próprias consome "créditos" do sistema Atlas (ganhos hospedando uma sonda ou obtidos por doação/troca), e a implementação exige lidar com autenticação por chave, requisições em JSON e tratamento de respostas em streaming — o que aumenta consideravelmente a complexidade de desenvolvimento em comparação com simplesmente baixar um arquivo pronto. (Fonte: RIPE Atlas REST API Manual, atlas.ripe.net/docs/apis/rest-api-manual)
 
-[Escreva aqui, citando a fonte consultada]
+Fontes consultadas
+
+RIPE Atlas — REST API Manual (Measurements): https://atlas.ripe.net/docs/apis/rest-api-manual/measurements/
+RIPE Atlas — REST API Manual (Fetching Measurement Results): https://atlas.ripe.net/docs/apis/rest-api-manual/measurements/results
+RIPE-NCC/ripe-atlas-tools (documentação sobre criação de chave de API e configuração): https://github.com/RIPE-NCC/ripe-atlas-tools
+CAIDA — Ark IPv4 Routed /24 Topology Dataset: https://www.caida.org/catalog/datasets/ipv4_routed_24_topology_dataset/
 
 ## 4. Comparação
 
@@ -86,10 +92,10 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
   `[]`
   `[]`
 
-### Integrante 2 — `[Escreva nome completo do aluno ]`
-- **O que fez nesta etapa:** `[]`
-- **Tempo dedicado (aprox.):** `[ex.: 3h30]`
-- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
+### Integrante 2 — `Ryan Catão De Paula `
+- **O que fez nesta etapa:** `Pesquisa e redigi a Opção B (API do RIPE Atlas), incluindo autenticação, criação de medições, consulta de resultados e as fontes usadas.`
+- **Tempo dedicado (aprox.):** `[1:20hrs]`
+- **Evidência da contribuição** *commit*:
   `[]`
   `[]`
 
