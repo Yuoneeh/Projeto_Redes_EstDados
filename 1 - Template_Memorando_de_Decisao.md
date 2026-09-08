@@ -86,11 +86,10 @@ O principal risco ao usar o dataset estático é o "concept drift", ou seja, os 
 Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o dataset do PingER teve seus servidores desligados, assim tomei por decisão pesquisar o dataset da CAIDA, também fiz a recomendação do mesmo. Ajudei também na elaboração da tabela comparativa entre o RIPE Atlas e o CAIDA.
 
 ### Integrante 1 — `Isaque Rodrigues Valim `
-- **O que fez nesta etapa:** `[pesquisa do dataset CAIDA e PingER, comparação entre RIPE Atlas e ]`
+- **O que fez nesta etapa:** `[pesquisa do dataset CAIDA e PingER, comparação entre RIPE Atlas e CAIDA]`
 - **Tempo dedicado (aprox.):** `[1:45hrs]`
-- **Evidência da contribuição** *commit*:
-  `[]`
-  `[]`
+- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
+  `[commit]`
 
 ### Integrante 2 — `Ryan Catão De Paula `
 - **O que fez nesta etapa:** `Pesquisa e redigi a Opção B (API do RIPE Atlas), incluindo autenticação, criação de medições, consulta de resultados e as fontes usadas.`
@@ -133,6 +132,6 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
 
 <!-- Mínimo de 3 fontes. Liste todas as páginas de documentação, artigos ou repositórios usados. -->
 
-1. [ ]
-2. [ ]
-3. [ ]
+1. [ CAIDA (Center for Applied Internet Data Analysis). The IPv4 Routed /24 Topology Dataset. Disponível em: https://www.caida.org/catalog/datasets/ipv4_routed_24_topology_dataset/]
+2. [RIPE Network Coordination Centre. RIPE Atlas REST API Reference. Disponível em: https://atlas.ripe.net/docs/apis/rest-api-reference/ ]
+3. [RIPE Network Coordination Centre. Measurements: Ping. Disponível em: https://atlas.ripe.net/docs/measurement-creation-api/ ]
