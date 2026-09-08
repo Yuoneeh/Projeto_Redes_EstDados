@@ -82,9 +82,8 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
 ### Integrante 1 — `Isaque Rodrigues Valim `
 - **O que fez nesta etapa:** `[pesquisa do dataset CAIDA e PingER, comparação entre RIPE Atlas e CAIDA]`
 - **Tempo dedicado (aprox.):** `[1:45hrs]`
-- **Evidência da contribuição** *commit*:
-  `[]`
-  `[]`
+- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
+  `[commit]`
 
 ### Integrante 2 — `[Escreva nome completo do aluno ]`
 - **O que fez nesta etapa:** `[]`
