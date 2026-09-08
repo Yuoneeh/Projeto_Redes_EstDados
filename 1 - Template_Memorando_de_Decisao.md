@@ -7,7 +7,7 @@
 | Projeto integrador | `[Preditor de falhas em rede` |
 | Orientador(a) | `[Andrea Ono Sakai]` |
 | Data de entrega desta etapa | `[08/09]` |
-| Integrantes do grupo | `[Eduardo Felipe Braga Silva, Isaque Rodrigues Valim , Ryan Catão De Paula (RETIRE OS COLCHETES)] ]` |
+| Integrantes do grupo | `Eduardo Felipe Braga Silva, Isaque Rodrigues Valim , Ryan Catão De Paula, Gabriel José Couto Pereira` |
 
 ---
 
