@@ -3,11 +3,11 @@
 
 | Campo | Informação |
 |---|---|
-| Curso / Disciplina | `[]` |
-| Projeto integrador | `[]` |
-| Orientador(a) | `[]` |
-| Data de entrega desta etapa | `[]` |
-| Integrantes do grupo | `[]` |
+| Curso / Disciplina | `[Ciências da Computação / Estrutura de Dados II]` |
+| Projeto integrador | `[Preditor de falhas em rede` |
+| Orientador(a) | `[Andrea Ono Sakai]` |
+| Data de entrega desta etapa | `[08/09]` |
+| Integrantes do grupo | `[Eduardo Felipe Braga Silva, (INSIRAM O NOME DE VOCÊS AQUI) ]` |
 
 ---
 
@@ -85,43 +85,43 @@ O pipeline do projeto já está definido: qualquer fonte de dados precisa produz
 - **O que fez nesta etapa:** `[]`
 - **Tempo dedicado (aprox.):** `[ex.: 3h30]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
-`[]` 
-`[]`
+  `[]`
+  `[]`
 
 ### Integrante 2 — `[Escreva nome completo do aluno ]`
 - **O que fez nesta etapa:** `[]`
 - **Tempo dedicado (aprox.):** `[ex.: 3h30]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
-`[]` 
-`[]`
+  `[]`
+  `[]`
 
 ### Integrante 3 — `[Escreva nome completo do aluno ]`
 - **O que fez nesta etapa:** `[]`
 - **Tempo dedicado (aprox.):** `[ex.: 3h30]`
-- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*: 
-`[]` 
-`[]`
+- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
+  `[]`
+  `[]`
 
 ### Integrante 4 — `[Escreva nome completo do aluno ]`
 - **O que fez nesta etapa:** `[]`
 - **Tempo dedicado (aprox.):** `[ex.: 3h30]`
-- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*: 
-`[]` 
-`[]`
+- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
+  `[]`
+  `[]`
 
 ### Integrante 5 — `[Escreva nome completo do aluno ]`
 - **O que fez nesta etapa:** `[]`
 - **Tempo dedicado (aprox.):** `[ex.: 3h30]`
-- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*: 
-`[]` 
-`[]`
+- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
+  `[]`
+  `[]`
 
 ### Integrante 6 — `[Escreva nome completo do aluno ]`
 - **O que fez nesta etapa:** `[]`
 - **Tempo dedicado (aprox.):** `[ex.: 3h30]`
-- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*: 
-`[]` 
-`[]`
+- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
+  `[]`
+  `[]`
 
 ---
 
