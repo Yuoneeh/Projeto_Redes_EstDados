@@ -87,12 +87,6 @@ Risco: ausência de jitter e rótulos nativos no CAIDA (necessidade de pré-proc
 
 <!-- cada integrante deve descrever, com suas próprias palavras, o que efetivamente fez nesta etapa. Contribuições genéricas como "ajudei em tudo" não serão aceitas. Use verbos de ação e seja específico (ex.: "pesquisei , analisei, testei, ... apresentei prós/contras ao grupo, ...").-->
 
-<<<<<<< HEAD
-=======
-
-Gabriel Pereira - Pesquisei riscos e limitações adicionais da Opção A (dataset CAIDA Ark) para complementar a Seção 7: levantei que a cobertura dos monitores Ark depende de hospedagem voluntária e sondagem aleatória por prefixo /24 a cada ~48h, o que pode gerar viés geográfico/topológico em relação à rede local simulada no projeto; pesquisei na literatura de detecção de anomalias de rede o problema de desbalanceamento de classes entre tráfego normal e falhas, incluindo um caso prático com proporção de mais de 25:1 entre classes, e as técnicas de mitigação (SMOTE, ponderação de classes). Redigi os dois riscos com sugestões de mitigação e propus 2 novas fontes para a lista de referências do grupo.
-
->>>>>>> c69d64d2893c843506ed3739f8cb6712a23abdee
 ### Integrante 1 — `Isaque Rodrigues Valim `
 - **O que fez nesta etapa:** `Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o dataset do PingER teve seus servidores desligados, assim tomei por decisão pesquisar o dataset da CAIDA, também fiz a recomendação do mesmo. Ajudei também na elaboração da tabela comparativa entre o RIPE Atlas e o CAIDA e justificativa de uso do dataset junto ao Eduardo .`
 - **Tempo dedicado (aprox.):** `[1:45hrs]`
@@ -104,11 +98,7 @@ Gabriel Pereira - Pesquisei riscos e limitações adicionais da Opção A (datas
 - **Tempo dedicado (aprox.):** `[1:20hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
   `[commit]`
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> c69d64d2893c843506ed3739f8cb6712a23abdee
 ### Integrante 3 — `Gabriel José Couto Pereira`
 - **O que fez nesta etapa:** `Pesquisa e redação dos riscos e limitações da Opção A (desbalanceamento de classes e cobertura geográfica/topológica) e adição de referências bibliográficas.`
 - **Tempo dedicado (aprox.):** `[1:30hrs]`
@@ -116,7 +106,7 @@ Gabriel Pereira - Pesquisei riscos e limitações adicionais da Opção A (datas
   `[commit]`
 
 ### Integrante 4 — `Gabriel Rodrigues Schmidt`
-- **O que fez nesta etapa:** `Análise de aderência das métricas ao Contrato de Dados (identificação da ausência de jitter e rótulos nativos no CAIDA), documentação da mitigação via pipeline de extração com scamper/sc_wartsdump (cálculo temporal de jitter) e estruturação do critério de comparação de métricas.`
+- **O que fez nesta etapa:** `Pesquisei riscos e limitações adicionais da Opção A (dataset CAIDA Ark) para complementar a Seção 7: levantei que a cobertura dos monitores Ark depende de hospedagem voluntária e sondagem aleatória por prefixo /24 a cada ~48h, o que pode gerar viés geográfico/topológico em relação à rede local simulada no projeto; pesquisei na literatura de detecção de anomalias de rede o problema de desbalanceamento de classes entre tráfego normal e falhas, incluindo um caso prático com proporção de mais de 25:1 entre classes, e as técnicas de mitigação (SMOTE, ponderação de classes). Redigi os dois riscos com sugestões de mitigação e propus 2 novas fontes para a lista de referências do grupo.`
 - **Tempo dedicado (aprox.):** `[1:30hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
   `[commit]`
