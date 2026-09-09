@@ -30,3 +30,4 @@ O desenvolvimento segue o schema de dados travado no Kickoff (`timestamp, ip, la
 ## Status
 
 Projeto em fase inicial (Kickoff). Estrutura de pastas e código a serem organizados conforme o desenvolvimento avança.
+----------------------------------------------------------------------------------------------------------------------------------
