@@ -110,13 +110,8 @@ Gabriel Pereira - Pesquisei riscos e limitações adicionais da Opção A (datas
 
 >>>>>>> c69d64d2893c843506ed3739f8cb6712a23abdee
 ### Integrante 3 — `Gabriel José Couto Pereira`
-<<<<<<< HEAD
-- **O que fez nesta etapa:** `Pesquisei riscos e limitações adicionais da Opção A (dataset CAIDA Ark) para complementar a Seção 7`
-- **Tempo dedicado (aprox.):** `[ex.: 1h30]`
-=======
 - **O que fez nesta etapa:** `Pesquisa e redação dos riscos e limitações da Opção A (desbalanceamento de classes e cobertura geográfica/topológica) e adição de referências bibliográficas.`
 - **Tempo dedicado (aprox.):** `[1:30hrs]`
->>>>>>> ffa7b6f449de5ec7ee86622392f37e0e5509d1b5
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
   `[commit]`
 
