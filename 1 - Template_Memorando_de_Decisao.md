@@ -88,7 +88,7 @@ Risco: ausência de jitter e rótulos nativos no CAIDA (necessidade de pré-proc
 <!-- cada integrante deve descrever, com suas próprias palavras, o que efetivamente fez nesta etapa. Contribuições genéricas como "ajudei em tudo" não serão aceitas. Use verbos de ação e seja específico (ex.: "pesquisei , analisei, testei, ... apresentei prós/contras ao grupo, ...").-->
 
 ### Integrante 1 — `Isaque Rodrigues Valim `
-- **O que fez nesta etapa:** `Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o dataset do PingER teve seus servidores desligados, assim tomei por decisão pesquisar o dataset da CAIDA, também fiz a recomendação do mesmo. Ajudei também na elaboração da tabela comparativa entre o RIPE Atlas e o CAIDA e justificativa de uso do dataset junto ao Eduardo .`
+- **O que fez nesta etapa:** `Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o dataset do PingER teve seus servidores desligados, assim tomei por decisão pesquisar o dataset da CAIDA, também fiz a recomendação do mesmo. Ajudei também na elaboração da tabela comparativa entre o RIPE Atlas e o CAIDA e justificativa de uso do dataset junto ao Eduardo.`
 - **Tempo dedicado (aprox.):** `[1:45hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
   `[commit]`
@@ -112,7 +112,7 @@ Risco: ausência de jitter e rótulos nativos no CAIDA (necessidade de pré-proc
   `[commit]`
 
 ### Integrante 5 — `Eduardo Felipe Braga Silva`
-- **O que fez nesta etapa:** `Inicializei o repositório e ajudei na comparação entre a RIPE Atlas API e o dataset da CAIDA. Também ajudei na elaboração da justificativa do uso do dataset CAIDA`
+- **O que fez nesta etapa:** `Inicializei o repositório e ajudei na comparação entre a RIPE Atlas API e o dataset da CAIDA. Também ajudei na elaboração da justificativa do uso do dataset CAIDA.`
 - **Tempo dedicado (aprox.):** `[1:40hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
   `[commit]`
