@@ -24,7 +24,7 @@ O desenvolvimento segue o schema de dados travado no Kickoff (`timestamp, ip, la
   - [Eduardo Felipe Braga Silva]
   - [Ryan Catão de Paula]
 - **Turma: 4°CC Manhâ**
-- **Link do repositório: https://github.com/Yuoneeh/Projeto_Redes_EstDados/tree/main **
+- **Link do repositório:** https://github.com/Yuoneeh/Projeto_Redes_EstDados/tree/main 
 - **Branch principal utilizada: main**
 
 ## Status

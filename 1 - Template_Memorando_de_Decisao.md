@@ -87,10 +87,8 @@ Risco: ausência de jitter e rótulos nativos no CAIDA (necessidade de pré-proc
 
 <!-- cada integrante deve descrever, com suas próprias palavras, o que efetivamente fez nesta etapa. Contribuições genéricas como "ajudei em tudo" não serão aceitas. Use verbos de ação e seja específico (ex.: "pesquisei , analisei, testei, ... apresentei prós/contras ao grupo, ...").-->
 
-Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o dataset do PingER teve seus servidores desligados, assim tomei por decisão pesquisar o dataset da CAIDA, também fiz a recomendação do mesmo. Ajudei também na elaboração da tabela comparativa entre o RIPE Atlas e o CAIDA.
-
 ### Integrante 1 — `Isaque Rodrigues Valim `
-- **O que fez nesta etapa:** `[pesquisa do dataset CAIDA e PingER, comparação entre RIPE Atlas e CAIDA]`
+- **O que fez nesta etapa:** `Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o dataset do PingER teve seus servidores desligados, assim tomei por decisão pesquisar o dataset da CAIDA, também fiz a recomendação do mesmo. Ajudei também na elaboração da tabela comparativa entre o RIPE Atlas e o CAIDA e justificativa de uso do dataset junto ao Eduardo .`
 - **Tempo dedicado (aprox.):** `[1:45hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
   `[commit]`
@@ -98,10 +96,9 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
 ### Integrante 2 — `Ryan Catão De Paula `
 - **O que fez nesta etapa:** `Pesquisa e redigi a Opção B (API do RIPE Atlas), incluindo autenticação, criação de medições, consulta de resultados e as fontes usadas.`
 - **Tempo dedicado (aprox.):** `[1:20hrs]`
-- **Evidência da contribuição** *commit*:
-  `[]`
-  `[]`
-
+- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
+  `[commit]`
+ 
 ### Integrante 3 — `Gabriel José Couto Pereira`
 - **O que fez nesta etapa:** `Pesquisa e redação dos riscos e limitações da Opção A (desbalanceamento de classes e cobertura geográfica/topológica) e adição de referências bibliográficas.`
 - **Tempo dedicado (aprox.):** `[1:30hrs]`
@@ -114,19 +111,11 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
   `[commit]`
 
-### Integrante 5 — `[Escreva nome completo do aluno ]`
-- **O que fez nesta etapa:** `[]`
-- **Tempo dedicado (aprox.):** `[ex.: 3h30]`
+### Integrante 5 — `Eduardo Felipe Braga Silva`
+- **O que fez nesta etapa:** `Inicializei o repositório e ajudei na comparação entre a RIPE Atlas API e o dataset da CAIDA. Também ajudei na elaboração da justificativa do uso do dataset CAIDA`
+- **Tempo dedicado (aprox.):** `[1:40hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
-  `[]`
-  `[]`
-
-### Integrante 6 — `[Escreva nome completo do aluno ]`
-- **O que fez nesta etapa:** `[]`
-- **Tempo dedicado (aprox.):** `[ex.: 3h30]`
-- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
-  `[]`
-  `[]`
+  `[commit]`
 
 ---
 
