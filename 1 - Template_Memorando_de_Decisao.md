@@ -78,6 +78,9 @@ Como o pipeline já está definido para receber X = [latência, perda, jitter], 
 <!-- O que pode dar errado com a opção escolhida, e como isso poderia ser mitigado. -->
 O principal risco ao usar o dataset estático é o "concept drift", ou seja, os padrões de falha de rede contidos em dados históricos podem não representar fielmente anomalias de topologias modernas. Isso pode ser mitigado separando cuidadosamente janelas de dados mais recentes do dataset e implementando testes de validação cruzada robustos durante o treinamento do modelo.
 
+Risco: desbalanceamento de classes. Datasets reais de rede tendem a ser dominados por registros de tráfego/status normal, com poucos exemplos de falha efetiva — um problema recorrente na literatura de detecção de anomalias de rede e frequentemente subestimado. Se o dataset do CAIDA (ou mesmo o log real coletado na Sprint 5) apresentar essa distribuição desbalanceada, o modelo de árvore de decisão tende a favorecer a classe majoritária (OK), reduzindo sua capacidade de identificar corretamente os casos de RISCO/FALHA — justamente os mais importantes para o objetivo do projeto. Mitigação: verificar a distribuição das classes antes do treino e, se necessário, aplicar balanceamento (undersampling da classe majoritária, oversampling/SMOTE da minoritária, ou ponderação de classes no próprio algoritmo).
+
+Risco: cobertura geográfica/topológica não representativa. Os monitores do Ark são hospedados de forma voluntária e distribuída, sondando destinos aleatórios dentro de cada prefixo /24 a cada ~48h — o que significa que os padrões de latência e perda capturados refletem as rotas visíveis a partir da localização específica de cada monitor, e não necessariamente as condições da rede local que o grupo simula no dashboard (via Packet Tracer/rede doméstica). Isso pode limitar a transferência dos padrões aprendidos com dados históricos do CAIDA para o cenário real do projeto. Mitigação: tratar o dataset do CAIDA como base de pré-treino/validação inicial, e priorizar o retreinamento com o log real coletado pela equipe de Redes na Sprint 5 como critério final de avaliação do modelo.
 
 ## 8. Contribuição Individual dos Integrantes
 
@@ -98,7 +101,7 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
   `[]`
   `[]`
 
-### Integrante 3 — `[Escreva nome completo do aluno ]`
+### Integrante 3 — `Gabriel José Couto Pereira`
 - **O que fez nesta etapa:** `[]`
 - **Tempo dedicado (aprox.):** `[ex.: 3h30]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
@@ -135,3 +138,5 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
 1. [ CAIDA (Center for Applied Internet Data Analysis). The IPv4 Routed /24 Topology Dataset. Disponível em: https://www.caida.org/catalog/datasets/ipv4_routed_24_topology_dataset/]
 2. [RIPE Network Coordination Centre. RIPE Atlas REST API Reference. Disponível em: https://atlas.ripe.net/docs/apis/rest-api-reference/ ]
 3. [RIPE Network Coordination Centre. Measurements: Ping. Disponível em: https://atlas.ripe.net/docs/measurement-creation-api/ ]
+4. CAIDA. Archipelago (Ark) Measurement Infrastructure. Disponível em: https://www.caida.org/projects/ark/
+5. Fern, S.H.; Amir, A.; Azemi, S.N. Multi-class Imbalanced Classification Problems in Network Attack Detections. Springer, 2022.
