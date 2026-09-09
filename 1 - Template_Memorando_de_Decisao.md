@@ -3,11 +3,11 @@
 
 | Campo | Informação |
 |---|---|
-| Curso / Disciplina | `[Ciências da Computação / Estrutura de Dados II]` |
-| Projeto integrador | `[Preditor de falhas em rede` |
-| Orientador(a) | `[Andrea Ono Sakai]` |
-| Data de entrega desta etapa | `[08/09]` |
-| Integrantes do grupo | `Eduardo Felipe Braga Silva, Isaque Rodrigues Valim , Ryan Catão De Paula, Gabriel José Couto Pereira` |
+| Curso / Disciplina | Ciência da Computação / Estrutura de Dados II |
+| Projeto integrador | Preditor de falhas em rede |
+| Orientador(a) | Andrea Ono Sakai |
+| Data de entrega desta etapa | 08/09 |
+| Integrantes do grupo | Eduardo Felipe Braga Silva, Isaque Rodrigues Valim, Ryan Catão De Paula, Gabriel José Couto Pereira, Gabriel Rodrigues Schmidt |
 
 ---
 
@@ -57,6 +57,7 @@ CAIDA — Ark IPv4 Routed /24 Topology Dataset: https://www.caida.org/catalog/da
 |---|---|---|
 | Controle sobre a coleta | Nulo. Os alvos e horários de ping são predefinidos pelos pesquisadores do CAIDA. | Total. É possível definir exatamente de onde e para onde os pacotes vão. |
 | Diversidade geográfica | Alta, com dezenas de monitores distribuídos globalmente. | Altíssima. Mais de 12.000 sondas ativas em redes domésticas e comerciais globais. |
+| Cobertura das métricas (Contrato de Dados) | Latência e perda de pacotes nativas; o jitter precisa ser calculado pela variação temporal do RTT. | Latência e perda nativas; medições frequentes para jitter contínuo consomem créditos elevados. |
 | Custo / complexidade de implementação | Moderado. Requer cadastro acadêmico e conversão técnica dos arquivos warts para CSV. | Moderado/Alto. Requer lidar com requisições HTTP, JSON, autenticação e gerenciamento de créditos. |
 | Tempo até os primeiros dados estarem disponíveis | Imediato após a aprovação do cadastro acadêmico e download dos arquivos. | Requer tempo de desenvolvimento da integração via código e execução das sondas. |
 
@@ -69,9 +70,7 @@ Recomenda-se a utilização da Opção A (Dataset real da CAIDA) para a próxima
 ## 6. Justificativa
 
 <!-- Por que essa opção vence a outra, com base nas evidências das seções 2, 3 e 4 — não em preferência pessoal. -->
-Como o pipeline já está definido para receber X = [latência, perda, jitter], a prioridade atual da equipe deve ser a validação e o treinamento do modelo preditor, e não a construção de uma infraestrutura de telemetria do zero. O dataset do CAIDA fornece um volume histórico de dados reais de ICMP (RTT e perdas) perfeitamente documentado, contornando o risco de atrasos na integração com a API do RIPE Atlas ou a falta de créditos para executar medições nesta fase inicial do projeto.
-
-[Escreva aqui]
+Como o pipeline já está definido para receber X = [latência, perda, jitter], a prioridade atual da equipe deve ser a validação e o treinamento do modelo preditor, e não a construção de uma infraestrutura de telemetria do zero. O dataset do CAIDA fornece um volume histórico de dados reais de ICMP (RTT e perdas) perfeitamente documentado, contornando o risco de atrasos na integração com a API do RIPE Atlas ou a falta de créditos para executar medições nesta fase inicial do projeto. Além disso, essa abordagem viabiliza o cumprimento imediato do cronograma da Sprint 1 (focada na estrutura da árvore de decisão e dados sintéticos), garantindo que a equipe de Estrutura de Dados avance sem bloqueios enquanto a equipe de Redes estrutura a coleta local e cálculo de jitter para as sprints seguintes.
 
 ## 7. Riscos e limitações
 
@@ -81,6 +80,8 @@ O principal risco ao usar o dataset estático é o "concept drift", ou seja, os 
 Risco: desbalanceamento de classes. Datasets reais de rede tendem a ser dominados por registros de tráfego/status normal, com poucos exemplos de falha efetiva — um problema recorrente na literatura de detecção de anomalias de rede e frequentemente subestimado. Se o dataset do CAIDA (ou mesmo o log real coletado na Sprint 5) apresentar essa distribuição desbalanceada, o modelo de árvore de decisão tende a favorecer a classe majoritária (OK), reduzindo sua capacidade de identificar corretamente os casos de RISCO/FALHA — justamente os mais importantes para o objetivo do projeto. Mitigação: verificar a distribuição das classes antes do treino e, se necessário, aplicar balanceamento (undersampling da classe majoritária, oversampling/SMOTE da minoritária, ou ponderação de classes no próprio algoritmo).
 
 Risco: cobertura geográfica/topológica não representativa. Os monitores do Ark são hospedados de forma voluntária e distribuída, sondando destinos aleatórios dentro de cada prefixo /24 a cada ~48h — o que significa que os padrões de latência e perda capturados refletem as rotas visíveis a partir da localização específica de cada monitor, e não necessariamente as condições da rede local que o grupo simula no dashboard (via Packet Tracer/rede doméstica). Isso pode limitar a transferência dos padrões aprendidos com dados históricos do CAIDA para o cenário real do projeto. Mitigação: tratar o dataset do CAIDA como base de pré-treino/validação inicial, e priorizar o retreinamento com o log real coletado pela equipe de Redes na Sprint 5 como critério final de avaliação do modelo.
+
+Risco: ausência de jitter e rótulos nativos no CAIDA (necessidade de pré-processamento). O dataset CAIDA Ark disponibiliza arquivos binários no formato warts contendo dados brutos de sondagem ICMP (RTT e perda), mas não traz a coluna de jitter pré-calculada nem o rótulo de status (`status_real`: OK, RISCO, FALHA) exigidos pelo Contrato de Dados do projeto para treinar a árvore de decisão de Estrutura de Dados II. Mitigação: utilizar a ferramenta oficial `sc_wartsdump` (suíte scamper do CAIDA) para decodificar os registros warts em CSV/JSON, computar o jitter pela variação absoluta do RTT entre medições sucessivas ($|RTT_i - RTT_{i-1}|$) e aplicar regras heurísticas preliminares de negócio para classificar as instâncias antes do treino.
 
 ## 8. Contribuição Individual dos Integrantes
 
@@ -102,18 +103,16 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
   `[]`
 
 ### Integrante 3 — `Gabriel José Couto Pereira`
-- **O que fez nesta etapa:** `[]`
-- **Tempo dedicado (aprox.):** `[ex.: 3h30]`
+- **O que fez nesta etapa:** `Pesquisa e redação dos riscos e limitações da Opção A (desbalanceamento de classes e cobertura geográfica/topológica) e adição de referências bibliográficas.`
+- **Tempo dedicado (aprox.):** `[1:30hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
-  `[]`
-  `[]`
+  `[commit]`
 
-### Integrante 4 — `[Escreva nome completo do aluno ]`
-- **O que fez nesta etapa:** `[]`
-- **Tempo dedicado (aprox.):** `[ex.: 3h30]`
+### Integrante 4 — `Gabriel Rodrigues Schmidt`
+- **O que fez nesta etapa:** `Análise de aderência das métricas ao Contrato de Dados (identificação da ausência de jitter e rótulos nativos no CAIDA), documentação da mitigação via pipeline de extração com scamper/sc_wartsdump (cálculo temporal de jitter) e estruturação do critério de comparação de métricas.`
+- **Tempo dedicado (aprox.):** `[1:30hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
-  `[]`
-  `[]`
+  `[commit]`
 
 ### Integrante 5 — `[Escreva nome completo do aluno ]`
 - **O que fez nesta etapa:** `[]`
@@ -140,3 +139,4 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
 3. [RIPE Network Coordination Centre. Measurements: Ping. Disponível em: https://atlas.ripe.net/docs/measurement-creation-api/ ]
 4. CAIDA. Archipelago (Ark) Measurement Infrastructure. Disponível em: https://www.caida.org/projects/ark/
 5. Fern, S.H.; Amir, A.; Azemi, S.N. Multi-class Imbalanced Classification Problems in Network Attack Detections. Springer, 2022.
+6. CAIDA. Scamper / sc_wartsdump: A tool for actively probing the Internet. Disponível em: https://www.caida.org/catalog/software/scamper/
