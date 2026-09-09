@@ -88,6 +88,8 @@ Risco: cobertura geográfica/topológica não representativa. Os monitores do Ar
 
 Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o dataset do PingER teve seus servidores desligados, assim tomei por decisão pesquisar o dataset da CAIDA, também fiz a recomendação do mesmo. Ajudei também na elaboração da tabela comparativa entre o RIPE Atlas e o CAIDA.
 
+Gabriel Pereira - Pesquisei riscos e limitações adicionais da Opção A (dataset CAIDA Ark) para complementar a Seção 7: levantei que a cobertura dos monitores Ark depende de hospedagem voluntária e sondagem aleatória por prefixo /24 a cada ~48h, o que pode gerar viés geográfico/topológico em relação à rede local simulada no projeto; pesquisei na literatura de detecção de anomalias de rede o problema de desbalanceamento de classes entre tráfego normal e falhas, incluindo um caso prático com proporção de mais de 25:1 entre classes, e as técnicas de mitigação (SMOTE, ponderação de classes). Redigi os dois riscos com sugestões de mitigação e propus 2 novas fontes para a lista de referências do grupo.
+
 ### Integrante 1 — `Isaque Rodrigues Valim `
 - **O que fez nesta etapa:** `[pesquisa do dataset CAIDA e PingER, comparação entre RIPE Atlas e CAIDA]`
 - **Tempo dedicado (aprox.):** `[1:45hrs]`
@@ -97,16 +99,14 @@ Isaque Valim - Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o d
 ### Integrante 2 — `Ryan Catão De Paula `
 - **O que fez nesta etapa:** `Pesquisa e redigi a Opção B (API do RIPE Atlas), incluindo autenticação, criação de medições, consulta de resultados e as fontes usadas.`
 - **Tempo dedicado (aprox.):** `[1:20hrs]`
-- **Evidência da contribuição** *commit*:
-  `[]`
-  `[]`
+- **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
+  `[commit]`
 
 ### Integrante 3 — `Gabriel José Couto Pereira`
-- **O que fez nesta etapa:** `[]`
-- **Tempo dedicado (aprox.):** `[ex.: 3h30]`
+- **O que fez nesta etapa:** `Pesquisei riscos e limitações adicionais da Opção A (dataset CAIDA Ark) para complementar a Seção 7`
+- **Tempo dedicado (aprox.):** `[ex.: 1h30]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
-  `[]`
-  `[]`
+  `[commit]`
 
 ### Integrante 4 — `[Escreva nome completo do aluno ]`
 - **O que fez nesta etapa:** `[]`
