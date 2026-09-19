@@ -113,7 +113,7 @@ Risco: ausência de jitter e rótulos nativos no CAIDA (necessidade de pré-proc
 
 ### Integrante 5 — `Eduardo Felipe Braga Silva`
 - **O que fez nesta etapa:** `Inicializei o repositório e ajudei na comparação entre a RIPE Atlas API e o dataset da CAIDA. Também ajudei na elaboração da justificativa do uso do dataset CAIDA.`
-- **Tempo dedicado (aprox.):** `[1:40hrs]`
+  - **Tempo dedicado (aprox.):** `[1:40hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
   `[commit]`
 
