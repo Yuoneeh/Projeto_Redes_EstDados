@@ -91,7 +91,7 @@ Risco: ausência de jitter e rótulos nativos no CAIDA (necessidade de pré-proc
 - **O que fez nesta etapa:** `Pesquisei e analisei 2 datasets reais, PingER e CAIDA, porém o dataset do PingER teve seus servidores desligados, assim tomei por decisão pesquisar o dataset da CAIDA, também fiz a recomendação do mesmo. Ajudei também na elaboração da tabela comparativa entre o RIPE Atlas e o CAIDA e justificativa de uso do dataset junto ao Eduardo.`
 - **Tempo dedicado (aprox.):** `[1:45hrs]`
 - **Evidência da contribuição** *(print de conversa, rascunho, e-mail, documento compartilhado etc.)*:
-  `[commit]`
+  `commit | prints(Google Drive) - ` https://drive.google.com/drive/folders/11gq9Cit8Sxn9JLjw90P3si7FjfpEv92C?usp=drive_link
 
 ### Integrante 2 — `Ryan Catão De Paula `
 - **O que fez nesta etapa:** `Pesquisa e redigi a Opção B (API do RIPE Atlas), incluindo autenticação, criação de medições, consulta de resultados e as fontes usadas.`
