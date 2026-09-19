@@ -55,22 +55,22 @@ CAIDA — Ark IPv4 Routed /24 Topology Dataset: https://www.caida.org/catalog/da
 
 | Critério | Opção A — Dataset real | Opção B — API RIPE Atlas |
 |---|---|---|
-| Controle sobre a coleta | Nulo. Os alvos e horários de ping são predefinidos pelos pesquisadores do CAIDA. | Total. É possível definir exatamente de onde e para onde os pacotes vão. |
+| Controle sobre a coleta | Nulo. Os alvos e horários de ping são predefinidos pelos pesquisadores do CAIDA. | Total. É possível definir alvo, quantidade de pacotes e localização da sonda. |
 | Diversidade geográfica | Alta, com dezenas de monitores distribuídos globalmente. | Altíssima. Mais de 12.000 sondas ativas em redes domésticas e comerciais globais. |
-| Cobertura das métricas (Contrato de Dados) | Latência e perda de pacotes nativas; o jitter precisa ser calculado pela variação temporal do RTT. | Latência e perda nativas; medições frequentes para jitter contínuo consomem créditos elevados. |
-| Custo / complexidade de implementação | Moderado. Requer cadastro acadêmico e conversão técnica dos arquivos warts para CSV. | Moderado/Alto. Requer lidar com requisições HTTP, JSON, autenticação e gerenciamento de créditos. |
-| Tempo até os primeiros dados estarem disponíveis | Imediato após a aprovação do cadastro acadêmico e download dos arquivos. | Requer tempo de desenvolvimento da integração via código e execução das sondas. |
+| Cobertura das métricas (Contrato de Dados) | Latência e perda de pacotes nativas; o jitter precisa ser calculado pela variação temporal do RTT. | Latência, perda e rtts detalhados nativos, permitindo fácil cálculo do Jitter. |
+| Custo / complexidade de implementação | Moderado. Requer cadastro acadêmico e conversão técnica dos arquivos warts para CSV. | Alto. Exige requisições HTTP, JSON, e scripts Python. Custo é mitigado via cota acadêmica. |
+| Tempo até os primeiros dados estarem disponíveis | Imediato após a aprovação do cadastro acadêmico e download dos arquivos. |Imediato para medições públicas, ou segundos após criar nova medição. |
 
 ## 5. Recomendação
 
 <!-- Uma frase direta: qual opção você recomenda. -->
 
-Recomenda-se a utilização da Opção A (Dataset real da CAIDA) para a próxima fase do projeto.
+Recomenda-se a utilização da Opção B (API do RIPE Atlas) para a próxima fase do projeto.
 
 ## 6. Justificativa
 
 <!-- Por que essa opção vence a outra, com base nas evidências das seções 2, 3 e 4 — não em preferência pessoal. -->
-Como o pipeline já está definido para receber X = [latência, perda, jitter], a prioridade atual da equipe deve ser a validação e o treinamento do modelo preditor, e não a construção de uma infraestrutura de telemetria do zero. O dataset do CAIDA fornece um volume histórico de dados reais de ICMP (RTT e perdas) perfeitamente documentado, contornando o risco de atrasos na integração com a API do RIPE Atlas ou a falta de créditos para executar medições nesta fase inicial do projeto. Além disso, essa abordagem viabiliza o cumprimento imediato do cronograma da Sprint 1 (focada na estrutura da árvore de decisão e dados sintéticos), garantindo que a equipe de Estrutura de Dados avance sem bloqueios enquanto a equipe de Redes estrutura a coleta local e cálculo de jitter para as sprints seguintes.
+Em alinhamento com a diretriz da professora Andrea e os objetivos de telemetria da disciplina, a API do RIPE Atlas se demonstra a escolha superior devido à sua versatilidade para atuar em tempo real. Enquanto o dataset CAIDA nos prenderia a uma análise histórica e engessada, o RIPE Atlas permite desenvolver a habilidade de consumo de APIs externas (REST/JSON) e simular um cenário real de um dashboard de monitoramento. Além disso, o obstáculo dos "créditos" do RIPE foi solucionado de duas formas: (1) utilizando medições contínuas públicas via IP, que são inteiramente gratuitas e não requerem chave, e (2) através do contato institucional para solicitar créditos de projeto universitário. Essa abordagem garante a coleta ativa das features de latência, perda e cálculo em tempo real do jitter para o nosso modelo.
 
 ## 7. Riscos e limitações
 
