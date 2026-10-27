@@ -36,7 +36,7 @@ import requests
 
 BASE = "https://atlas.ripe.net/api/v2"
 
-# Rotas de pais (origem, destino) - desenho do guia, secao 5.
+# Mudança para atingir ~30 probes de origem:
 ROTAS = [
     ("BR", "BR"), ("BR", "UY"), ("BR", "BO"), ("BR", "JP"), ("BR", "IN"), ("BR", "ZA"),
     ("DE", "DE"), ("DE", "PT"),
@@ -44,6 +44,7 @@ ROTAS = [
     ("ES", "PL"),
     ("ZA", "KE"),
     ("IN", "SG"),
+    ("NL", "DE"), ("US", "BR"),  # +8 probes de origem para fechar ~30 probes
 ]
 
 INTERVALO_MESH = 240      # s
