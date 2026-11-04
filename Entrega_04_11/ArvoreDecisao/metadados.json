@@ -1,0 +1,72 @@
+{
+  "nome_modelo": "Preditor_Degradacao_RIPE_Mesh",
+  "versao_modelo": "1.0",
+  "ambiente": {
+    "python_version": "3.x",
+    "bibliotecas": [
+      "scikit-learn",
+      "pandas",
+      "numpy"
+    ]
+  },
+  "entradas": {
+    "descricao": "Features relativas de telemetria baseadas no histórico do fluxo",
+    "ordem": [
+      "z_robusto",
+      "aumento_pct",
+      "jitter_relativo",
+      "perda_pacotes",
+      "timeout_atual",
+      "n5_timeout",
+      "n5_aumento80",
+      "n5_risco"
+    ],
+    "tipos": [
+      "float64",
+      "float64",
+      "float64",
+      "float64",
+      "int64",
+      "int64",
+      "int64",
+      "int64"
+    ]
+  },
+  "calculo_features": {
+    "z_robusto": "(latencia_atual - mediana_baseline) / max(1.4826 * MAD_baseline, IQR_baseline / 1.349, 1.0)",
+    "aumento_pct": "(latencia_atual - mediana_baseline) / mediana_baseline * 100",
+    "jitter_relativo": "jitter_atual / jitter_tipico_baseline (se jitter_tipico for 0 e atual > 0, assume 3.0)",
+    "timeout_atual": "1 se RTT estiver vazio ou perda_pacotes >= 100, senão 0",
+    "n5_timeout": "Soma de timeout_atual nas últimas 5 medições do mesmo fluxo_id",
+    "n5_aumento80": "Soma de (aumento_pct > 80) nas últimas 5 medições do mesmo fluxo_id",
+    "n5_risco": "Soma de ocorrências de RISCO nas últimas 5 medições do mesmo fluxo_id"
+  },
+  "tratamento_excecoes": {
+    "valores_ausentes": "Preenchimento: z_robusto=0.0, aumento_pct=0.0, jitter_relativo=1.0",
+    "divisao_por_zero": "Impedida pela lógica do denominador (uso de max com 1.0 no z_robusto e tratamento condicional no jitter_relativo)"
+  },
+  "saidas": {
+    "significado": "Previsão do estado da rede para 12 minutos à frente",
+    "ordem_classes": [
+      "OK",
+      "RISCO",
+      "FALHA"
+    ]
+  },
+  "horizonte_previsao": "12 minutos à frente (shift de 3 passos de 240s)",
+  "requisitos_historico": "Necessário no mínimo 1500 medições prévias no Período A para montar a baseline do fluxo, e janela contínua das últimas 5 medições para as variáveis n5",
+  "regras_baseline": "Fluxos com menos de 1500 medições no Período A recebem status 'baseline_insuficiente' e são ignorados.",
+  "exemplo_real": {
+    "entrada_exemplo": {
+      "z_robusto": 1.23,
+      "aumento_pct": 0.75,
+      "jitter_relativo": 3.47,
+      "perda_pacotes": 0.0,
+      "timeout_atual": 0,
+      "n5_timeout": 0,
+      "n5_aumento80": 0,
+      "n5_risco": 2
+    },
+    "saida_esperada": "RISCO"
+  }
+}
