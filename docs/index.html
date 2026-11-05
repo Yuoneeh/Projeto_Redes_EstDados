@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Pulso da Rede | Grupo 3</title>
+    <!-- Fontes do Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* === VARIÁVEIS CSS (Dark Theme Minimalista) === */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8; /* Azul Neon */
+            --success: #10b981; /* Verde OK */
+            --danger: #f43f5e; /* Vermelho Falha */
+            --warning: #f59e0b; /* Amarelo Risco */
+        }
+
+        /* === RESET E BASE === */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* === NAVEGAÇÃO === */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid #334155;
+        }
+        nav .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); }
+        nav ul { list-style: none; display: flex; gap: 1.5rem; }
+        nav a { color: var(--text-main); text-decoration: none; font-weight: 600; transition: 0.3s; font-size: 0.95rem; }
+        nav a:hover { color: var(--primary); }
+
+        /* === HERO SECTION === */
+        header.hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        }
+        .hero h1 { font-size: 3.8rem; margin-bottom: 1rem; line-height: 1.1; }
+        .hero h1 span { color: var(--primary); }
+        .typewriter { font-family: 'Fira Code', monospace; color: var(--text-muted); font-size: 1.2rem; margin-bottom: 2.5rem; min-height: 30px;}
+        .btn {
+            padding: 12px 28px; background: var(--primary); color: #000; 
+            border: none; border-radius: 5px; font-weight: 800; font-size: 1.1rem;
+            text-decoration: none; transition: 0.3s; cursor: pointer; display: inline-block;
+        }
+        .btn:hover { box-shadow: 0 0 15px var(--primary); transform: translateY(-2px); }
+
+        /* === SEÇÕES E CARDS === */
+        section { padding: 5rem 2rem 2rem; max-width: 950px; margin: auto; }
+        section h2 { font-size: 2.2rem; margin-bottom: 1.5rem; color: var(--primary); border-bottom: 2px solid var(--card-bg); padding-bottom: 10px; }
+        
+        .card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .card h3 { margin-bottom: 1rem; font-size: 1.4rem; color: #e2e8f0; }
+
+        .highlight-box {
+            background: rgba(56, 189, 248, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            font-style: italic;
+            border-left: 3px solid var(--primary);
+        }
+
+        /* === VÍDEO RESPONSIVO === */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* Proporção 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+            margin: 2rem 0;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+
+        /* === BLOCOS DE CÓDIGO (API) === */
+        pre {
+            background: #000;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            color: var(--success);
+            margin: 1rem 0;
+            border: 1px solid #334155;
+        }
+
+        /* === STATUS BADGES === */
+        .badge { padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; margin: 0 5px; }
+        .b-ok { background: var(--success); color: #000; }
+        .b-risco { background: var(--warning); color: #000; }
+        .b-falha { background: var(--danger); color: #fff; }
+        
+        /* === GRID DE DADOS === */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .stat-item {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .stat-item h4 { color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem; }
+
+        /* === ANIMAÇÕES (Scroll Reveal) === */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center; padding: 4rem 2rem; background: var(--card-bg);
+            border-top: 1px solid #334155; margin-top: 4rem;
+        }
+        footer a { color: var(--primary); text-decoration: none; transition: 0.3s;}
+        footer a:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="logo"><i class="fa-solid fa-network-wired"></i> Grupo 3</div>
+        <ul class="nav-links">
+            <li><a href="#pitch">Pitch</a></li>
+            <li><a href="#problema">O Problema</a></li>
+            <li><a href="#dados">Os Dados</a></li>
+            <li><a href="#campeao">O Modelo</a></li>
+            <li><a href="#api">API</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+        <h1>Prevendo o <span>Caos</span> na Rede</h1>
+        <p class="typewriter" id="typewriter"></p>
+        <a href="#pitch" class="btn">Conheça o Projeto <i class="fa-solid fa-arrow-down"></i></a>
+    </header>
+
+    <main>
+        <!-- VÍDEO PITCH -->
+        <section id="pitch" class="reveal">
+            <h2><i class="fa-brands fa-youtube"></i> Nosso Projeto em 90 Segundos</h2>
+            <p>Descubra como estruturamos o Preditor de Falhas e Riscos (RIPE Mesh) para antecipar quedas de conexão globais.</p>
+            <div class="video-wrapper">
+                <!-- SUBSTITUA O LINK ABAIXO PELO EMBED DO SEU VÍDEO NO YOUTUBE -->
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/SEU_CODIGO_AQUI?rel=0" title="Vídeo Pitch Grupo 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </section>
+
+        <!-- O PROBLEMA -->
+        <section id="problema" class="reveal">
+            <h2><i class="fa-solid fa-triangle-exclamation"></i> Quem precisa saber o futuro?</h2>
+            <div class="card">
+                <p>Você já percebeu como a internet parece mágica até que a sua série trava na melhor parte? Ou pior: quando o sistema do banco cai no momento que você mais precisa fazer um pagamento?</p>
+                <br>
+                <p>A internet global é sustentada por cabos submarinos e roteadores enormes. Para empresas que dependem de infraestrutura crítica (hospitais, bancos, plataformas de streaming), o monitoramento tradicional só avisa que a rede caiu <strong>quando ela já caiu</strong>.</p>
+                <div class="highlight-box">
+                    <strong>Nossa Solução:</strong> Um modelo de Machine Learning que enxerga os "sintomas invisíveis" da rede (como tremores na latência) e emite um alerta com <strong>12 minutos de antecedência</strong>. Tempo suficiente para os engenheiros mudarem a rota antes do sistema cair.
+                </div>
+            </div>
+        </section>
+
+        <!-- OS DADOS -->
+        <section id="dados" class="reveal">
+            <h2><i class="fa-solid fa-database"></i> Como "ouvimos" a internet mundial?</h2>
+            <p>Para prever o futuro da internet, precisamos dos melhores dados do mundo. Recorremos ao <strong>RIPE Atlas</strong>, a maior rede de telemetria e sondas de internet ativa do planeta.</p>
+            
+            <div class="card">
+                <h3>1. A Origem e o Volume</h3>
+                <p>Criamos um script modularizado em Python que monitorou pings entre dezenas de servidores (sondas) na <strong>Alemanha, Brasil, Estados Unidos, Holanda e Singapura</strong>. Observamos a rede a cada 4 minutos durante 14 dias ininterruptos.</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h4>1.4M+</h4>
+                        <p>Pacotes Analisados</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>14</h4>
+                        <p>Dias de Monitoramento</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>12 min</h4>
+                        <p>Horizonte de Previsão</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>2. Limpeza e Variáveis Avançadas</h3>
+                <p>Não basta olhar para o tempo de resposta puro. 150 milissegundos é rápido se você está no Brasil falando com o Japão, mas é um desastre se o servidor for na rua de trás. Para isso, dividimos os dados em dois períodos:</p>
+                <ul>
+                    <li><strong>Período A (Baseline):</strong> Usamos os primeiros 7 dias para a inteligência artificial "aprender" o que é normal para cada rota (mediana, desvio).</li>
+                    <li><strong>Período B (Monitoramento):</strong> Transformamos os últimos 7 dias em <em>Métricas Relativas</em>, como o <strong>Z-Score Robusto</strong> e a variação do <strong>Jitter</strong> (variação do atraso).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- A TECNOLOGIA E O CAMPEÃO -->
+        <section id="campeao" class="reveal">
+            <h2><i class="fa-solid fa-code-branch"></i> O Cérebro Artificial: Árvores de Decisão</h2>
+            <p>Nosso modelo toma decisões através de algoritmos de <strong>Árvores de Decisão (CART) e Random Forest</strong>. Em vez de ser uma "caixa preta" indecifrável, a árvore funciona como o jogo <em>Cara a Cara</em>. Ela faz perguntas em sequência aos dados, como:</p>
+            <br>
+            <p><i class="fa-solid fa-arrow-right" style="color:var(--primary)"></i> <em>A rede perdeu pacotes?</em> Se sim, o rótulo futuro será <span class="badge b-falha">FALHA</span>.</p>
+            <p><i class="fa-solid fa-arrow-right" style="color:var(--primary)"></i> <em>Nas últimas 5 medições, o Z-Score demonstrou risco?</em> Se sim, prevemos <span class="badge b-risco">RISCO</span>.</p>
+            <p><i class="fa-solid fa-arrow-right" style="color:var(--primary)"></i> <em>Caso contrário:</em> A rede está <span class="badge b-ok">OK</span>.</p>
+           
+            <div class="card" style="margin-top: 2.5rem;">
+                <h3 style="color: var(--primary);">🏆 Por que a Árvore Ajustada Venceu?</h3>
+                <p>Na nossa primeira tentativa manual, o algoritmo encontrava apenas 59% das anomalias ocultas. Então, aplicamos a <strong>Otimização de Hiperparâmetros (Grid Search)</strong> em nosso bloco de Validação. O resultado? O modelo atingiu <strong>100% de Recall para Riscos</strong> e um F1-Score Macro assustador de <strong>99.98%</strong>!</p>
+                <br>
+                <p><strong>Hiperparâmetros Mágicos:</strong></p>
+                <ul>
+                    <li><code>max_depth = 4</code>: Impede que a árvore decore os dados (overfitting), limitando ela a 4 perguntas de profundidade.</li>
+                    <li><code>min_samples_leaf = 50</code>: Exige que haja consistência. A máquina só assume uma regra se pelo menos 50 medições comprovarem aquele padrão.</li>
+                    <li><code>class_weight = 'balanced'</code>: Dá "pesos maiores" para os momentos de falha, equilibrando o fato de que a internet passa 90% do tempo funcionando bem.</li>
+                </ul>
+                <br>
+                <h3>Onde a IA ainda erra?</h3>
+                <p>Para testar o modelo pra valer, fizemos um <em>Teste Cego (Hold-Out de Protocolo B)</em> com rotas de países que a árvore nunca tinha visto. Ela acertou perfeitamente os desgastes progressivos. Contudo, se um cabo submarino for rompido fisicamente por uma âncora, sem <strong>nenhum aviso ou lentidão prévia</strong> nos 12 minutos anteriores, o modelo não consegue prever a queda, pois é uma pane súbita.</p>
+            </div>
+        </section>
+
+        <!-- OS RESULTADOS COM GRÁFICOS -->
+        <section id="resultados" class="reveal">
+            <h2><i class="fa-solid fa-chart-pie"></i> Os Resultados em Ação</h2>
+            <p>Os números comprovam a eficácia da nossa Árvore Ajustada no bloco de testes. Veja como o modelo se comportou face a rotas de internet inéditas:</p>
+            
+            <div class="card" style="margin-top: 2rem;">
+                <h3 style="color: var(--primary);">Matriz de Confusão (Previsão vs Realidade)</h3>
+                <!-- SUBSTITUA "matriz_confusao.png" PELO NOME DA VOSSA IMAGEM -->
+                <img src="matriz_confusao.png" alt="Gráfico da Matriz de Confusão" style="width: 100%; max-width: 600px; border-radius: 8px; margin: 1rem auto; display: block; border: 1px solid #334155;">
+                
+                <div class="highlight-box">
+                    <strong>Análise do Gráfico:</strong> A diagonal principal (onde as previsões coincidem com o estado real) concentra quase a totalidade dos dados. O modelo demonstrou um <strong>Recall de 100%</strong> para a classe de RISCO, significando que não deixou escapar absolutamente nenhum sinal de instabilidade. A taxa de falsos positivos foi estatisticamente irrelevante.
+                </div>
+            </div>
+            
+            <!-- Pode replicar o bloco acima se tiverem um gráfico de Importância das Variáveis (Feature Importance) -->
+        </section>
+
+        <!-- API E USO -->
+        <section id="api" class="reveal">
+            <h2><i class="fa-solid fa-plug"></i> Teste a nossa API</h2>
+            <p>O modelo foi empacotado (`.joblib`) e está pronto para produção. Um sistema em nuvem pode mandar o estado da rede via JSON, e a nossa IA devolve o que acontecerá 12 minutos depois.</p>
+            
+            <div class="card">
+                <h3>Sua Requisição (Dados atuais no instante T)</h3>
+<pre><code>{
+  "z_robusto": 1.23,
+  "aumento_pct": 0.75,
+  "jitter_relativo": 3.47,
+  "perda_pacotes": 0.0,
+  "timeout_atual": 0,
+  "n5_timeout": 0,
+  "n5_aumento80": 0,
+  "n5_risco": 2
+}</code></pre>
+                
+                <button class="btn" id="btn-api" style="margin-top: 10px;" onclick="simularAPI()">Consultar o Futuro (T+12 min) 🚀</button>
+                
+                <div id="api-response" style="display: none; margin-top: 20px;">
+                    <h3>Resposta do Servidor (Predição):</h3>
+<pre><code>{
+  "estado_futuro_previsto": "RISCO",
+  "mensagem": "Alerta: O jitter relativo e o acúmulo de instabilidade (n5_risco) indicam degradação iminente nos próximos 12 minutos."
+}</code></pre>
+                </div>
+            </div>
+        </section>
+        
+        <!-- PRÓXIMOS PASSOS -->
+        <section id="limitacoes" class="reveal">
+            <h2><i class="fa-solid fa-rocket"></i> Próximos Passos</h2>
+            <p>O futuro da infraestrutura global é autônomo. O próximo passo deste projeto é integrar as respostas da nossa API diretamente a controladores <strong>SDN (Redes Definidas por Software)</strong>. Dessa forma, no milissegundo em que a API prever uma FALHA na rota principal, o roteador trocará automaticamente o tráfego para uma rota de backup, sem que nenhum usuário sinta o vídeo travar.</p>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <h2 style="color: var(--text-main); margin-bottom: 10px;">Projeto Interdisciplinar | Estruturas de Dados II & Redes</h2>
+        <p style="color: var(--primary); font-weight: 600; font-size: 1.1rem;">Grupo 3 — 4º Semestre / Ciência da Computação (Manhã)</p>
+        <p style="margin-top: 10px;">Isaque Valim • Gabriel Pereira • Gabriel Schmidt • Eduardo Silva • Ryan de Paula</p>
+        <br><br>
+        <p><a href="https://github.com/Yuoneeh/Projeto_Redes_EstDados/tree/main" target="_blank">
+            <i class="fa-brands fa-github fa-2xl" style="margin-bottom: 15px; color: var(--text-main);"></i><br>
+            Acessar o Repositório Oficial no GitHub
+        </a></p>
+    </footer>
+
+    <!-- SCRIPTS MÁGICOS -->
+    <script>
+        // Efeito Máquina de Escrever no Banner
+        const text = "14 dias de dados. 5 Continentes. Previsão de falhas com 12 minutos de antecedência.";
+        let i = 0;
+        const speed = 45;
+
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById("typewriter").innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, speed);
+            }
+        }
+        window.onload = typeWriter;
+
+        // Efeito de Revelar ao Scrolar (Scroll Reveal)
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var j = 0; j < reveals.length; j++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[j].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[j].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal(); // Chama uma vez para exibir o que já está na tela
+
+        // Simulação do Botão de API
+        function simularAPI() {
+            const btn = document.getElementById('btn-api');
+            btn.innerHTML = "<i class='fa-solid fa-circle-notch fa-spin'></i> Calculando...";
+            btn.style.opacity = "0.8";
+            setTimeout(() => {
+                document.getElementById('api-response').style.display = 'block';
+                btn.innerHTML = "Refazer Predição";
+                btn.style.opacity = "1";
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
