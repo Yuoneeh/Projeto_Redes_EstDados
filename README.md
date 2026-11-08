@@ -76,10 +76,10 @@ pip install -r requirements.txt
 
 ## 📝 Diários das tarefas
 
-- [Tarefa 2 — Baseline e rotulagem](docs/tarefas/Tarefa2_Baseline_e_Rotulagem.md)
-- [Tarefa 3 — Primeira árvore](docs/tarefas/Tarefa3_Arvore_Inicial.md)
-- [Tarefa 4 — Ajuste da árvore](docs/tarefas/Tarefa4_Ajuste_da_Arvore.md)
-- [Tarefa 5 — Árvore final e teste único](docs/tarefas/Tarefa5_Arvore_Final.md)
+- [Tarefa 2 — Baseline e rotulagem](notebooks/isaque/Tarefa2_Baseline_e_Rotulagem.ipynb)
+- [Tarefa 3 — Primeira árvore](notebooks/isaque/Tarefa3_Arvore_inicial.ipynb)
+- [Tarefa 4 — Ajuste da árvore](notebooks/isaque/Tarefa4_Ajuste_da_Arvore.ipynb)
+- [Tarefa 5 — Árvore final e teste único](notebooks/isaque/Tarefa5_Arvore_Final.ipynb)
 
 ## ⚠️ Limitações
 
