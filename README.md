@@ -1,7 +1,7 @@
 # Preditor de Risco de Rede
 
 <p align="center">
-  <img src="docs/logo_preditor_de_risco_de_rede.png" alt="Logo do Preditor de Risco de Rede" width="220">
+  <img src="docs/logo_preditorderiscoderede.png" alt="Logo do Preditor de Risco de Rede" width="220">
 </p>
 
 Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a partir de medições de ping do RIPE Atlas. Cada medição é comparada com o **comportamento normal do próprio fluxo** (baseline), e não com um limite global de RTT.
