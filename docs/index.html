@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O Pulso da Rede | Grupo 3</title>
+    <title>Preditor de Risco de Rede | Grupo 3</title>
+    <link rel="icon" type="image/png" href="logo_preditor_de_risco_de_rede.png">
     <!-- Fontes do Google -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <!-- Ícones -->
@@ -45,7 +46,9 @@
             z-index: 1000;
             border-bottom: 1px solid #334155;
         }
-        nav .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); }
+        nav .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 0.6rem; }
+        nav .logo img { height: 40px; width: 40px; border-radius: 8px; }
+        .hero-logo { width: 180px; max-width: 45vw; border-radius: 24px; margin-bottom: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         nav ul { list-style: none; display: flex; gap: 1.5rem; }
         nav a { color: var(--text-main); text-decoration: none; font-weight: 600; transition: 0.3s; font-size: 0.95rem; }
         nav a:hover { color: var(--primary); }
@@ -163,7 +166,7 @@
 
     <!-- NAV -->
     <nav>
-        <div class="logo"><i class="fa-solid fa-network-wired"></i> Grupo 3</div>
+        <div class="logo"><img src="logo_preditor_de_risco_de_rede.png" alt="Logo do Preditor de Risco de Rede"> Preditor de Risco de Rede</div>
         <ul class="nav-links">
             <li><a href="#pitch">Pitch</a></li>
             <li><a href="#problema">O Problema</a></li>
@@ -175,6 +178,7 @@
 
     <!-- HERO -->
     <header class="hero">
+        <img class="hero-logo" src="logo_preditor_de_risco_de_rede.png" alt="Logo do Preditor de Risco de Rede">
         <h1>Prevendo o <span>Caos</span> na Rede</h1>
         <p class="typewriter" id="typewriter"></p>
         <a href="#pitch" class="btn">Conheça o Projeto <i class="fa-solid fa-arrow-down"></i></a>
