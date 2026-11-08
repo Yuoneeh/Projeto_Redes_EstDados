@@ -11,7 +11,7 @@ Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a pa
 | Item | Link |
 |---|---|
 | 📄 Artigo publicado | https://artigopreditorderedes.vercel.app/ |
-| 🎥 Vídeo pitch (90 s, YouTube não listado) | **[COLAR AQUI O LINK DO YOUTUBE]** |
+| 🎥 Vídeo pitch (90 s, YouTube não listado) | **https://youtu.be/h0cTuHPZZOc** |
 | 🗂️ Repositório do artigo | https://github.com/Yuoneeh/Artigo_Preditor_de_redes |
 | 🌐 Site do projeto (`docs/index.html`) | https://projetoredesestdados-docs.vercel.app |
 | 💻 Este repositório | https://github.com/Yuoneeh/Projeto_Redes_EstDados |
