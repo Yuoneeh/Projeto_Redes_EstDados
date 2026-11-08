@@ -1,7 +1,7 @@
 # Preditor de Risco de Rede
 
 <p align="center">
-  <img src="docs/logo_preditorderiscoderede.png" alt="Logo do Preditor de Risco de Rede" width="220">
+  <img src="docs/logo_preditor_de_risco_de_rede.png" alt="Logo do Preditor de Risco de Rede" width="220">
 </p>
 
 Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a partir de medições de ping do RIPE Atlas. Cada medição é comparada com o **comportamento normal do próprio fluxo** (baseline), e não com um limite global de RTT.
@@ -17,6 +17,11 @@ Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a pa
 | 💻 Este repositório | https://github.com/Yuoneeh/Projeto_Redes_EstDados |
 
 Caminho de acesso: QR Code → artigo → repositório.
+
+<p align="center">
+  <img src="docs/qrcode_artigo.png" alt="QR Code do artigo" width="200"><br>
+  <sub>QR Code do artigo</sub>
+</p>
 
 ## 🎯 Objetivo
 
@@ -55,7 +60,7 @@ O detector reproduz com folga a política de rótulo, porque o rótulo usa as me
 │   ├── ArvoreDecisao/        arvore_protocolo_b.joblib e metadados.json
 │   └── RandomForest/         metadados.json
 ├── data/log_rede.csv         log do Kickoff (legado)
-├── docs/                     site do projeto (index.html e logo)
+├── docs/                     site do projeto (index.html, logo, QR Code) e tarefas/ (diários das Tarefas 2 a 5)
 └── requirements.txt
 ```
 
@@ -71,7 +76,10 @@ pip install -r requirements.txt
 
 ## 📝 Diários das tarefas
 
-Os arquivos `tarefas.md` (Tarefas 1 a 5) ficam em `docs/tarefas/`. *(Adicionar os arquivos preenchidos antes da entrega.)*
+- [Tarefa 2 — Baseline e rotulagem](docs/tarefas/Tarefa2_Baseline_e_Rotulagem.md)
+- [Tarefa 3 — Primeira árvore](docs/tarefas/Tarefa3_Arvore_Inicial.md)
+- [Tarefa 4 — Ajuste da árvore](docs/tarefas/Tarefa4_Ajuste_da_Arvore.md)
+- [Tarefa 5 — Árvore final e teste único](docs/tarefas/Tarefa5_Arvore_Final.md)
 
 ## ⚠️ Limitações
 
