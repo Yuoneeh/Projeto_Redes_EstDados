@@ -58,7 +58,7 @@ O detector reproduz com folga a política de rótulo, porque o rótulo usa as me
 ├── Entrega_04_11/
 │   ├── Dataset_usado/        baseline_por_fluxo.csv e dataset_final_treino.csv
 │   ├── ArvoreDecisao/        arvore_protocolo_b.joblib e metadados.json
-│   └── RandomForest/         metadados.json
+│   └── RandomForest/         Modelo_Random_Forest.txt
 ├── data/log_rede.csv         log do Kickoff (legado)
 ├── docs/                     site do projeto (index.html, logo, QR Code)
 └── requirements.txt
