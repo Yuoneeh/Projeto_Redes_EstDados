@@ -1,7 +1,7 @@
 # Preditor de Risco de Rede
 
 <p align="center">
-  <img src="docs/logo_preditor_de_risco_de_rede.png" alt="Logo do Preditor de Risco de Rede" width="220">
+  <img src="docs/logo_preditorderiscoderede.png" alt="Logo do Preditor de Risco de Rede" width="220">
 </p>
 
 Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a partir de medições de ping do RIPE Atlas. Cada medição é comparada com o **comportamento normal do próprio fluxo** (baseline), e não com um limite global de RTT.
@@ -13,7 +13,7 @@ Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a pa
 | 📄 Artigo publicado | https://artigopreditorderedes.vercel.app/ |
 | 🎥 Vídeo pitch (90 s, YouTube não listado) | **[COLAR AQUI O LINK DO YOUTUBE]** |
 | 🗂️ Repositório do artigo | https://github.com/Yuoneeh/Artigo_Preditor_de_redes |
-| 🌐 Site do projeto (`docs/index.html`) | **[COLAR AQUI O LINK DO SITE, SE PUBLICADO]** |
+| 🌐 Site do projeto (`docs/index.html`) | https://projetoredesestdados-docs.vercel.app |
 | 💻 Este repositório | https://github.com/Yuoneeh/Projeto_Redes_EstDados |
 
 Caminho de acesso: QR Code → artigo → repositório.
