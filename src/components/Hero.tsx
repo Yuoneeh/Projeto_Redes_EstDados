@@ -107,9 +107,22 @@ export default function Hero() {
 
   // Inicia sem nenhum IP traçado (globo e timeline limpos até que um IP seja inserido)
   const [customFlow, setCustomFlow] = useState<FlowBaseline | null>(null);
+  const [detectedClientIp, setDetectedClientIp] = useState<string>("");
   const prevRttRef = useRef<number | null>(null);
   const baselineSamplesCountRef = useRef(0);
   const rttAccumulatorRef = useRef<number[]>([]);
+
+  // Detecta o IP externo público real diretamente pelo navegador do cliente
+  useEffect(() => {
+    fetch("https://api.ipify.org?format=json")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.ip) {
+          setDetectedClientIp(data.ip);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const storeRef = useRef<FlowTelemetryStore>(new FlowTelemetryStore(24));
   const [latestSamples, setLatestSamples] = useState<Record<string, TelemetrySample>>({});
@@ -124,7 +137,10 @@ export default function Hero() {
         const res = await fetch("/api/ping", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ target: flowToPing.dst_addr }),
+          body: JSON.stringify({
+            target: flowToPing.dst_addr,
+            clientIp: flowToPing.origem_ip !== "127.0.0.1" ? flowToPing.origem_ip : (detectedClientIp || undefined),
+          }),
         });
 
         if (!res.ok) {
@@ -222,7 +238,10 @@ export default function Hero() {
       const res = await fetch("/api/ping", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ target: rawTarget }),
+        body: JSON.stringify({
+          target: rawTarget,
+          clientIp: detectedClientIp || undefined,
+        }),
       });
 
       if (!res.ok) {
@@ -235,6 +254,7 @@ export default function Hero() {
       const initialRtt = data.rtt;
       const initialMed = initialRtt || 50;
 
+      const clientCity = data.client.city || "Seu Dispositivo";
       const newFlow: FlowBaseline = {
         fluxo_id: `alvo-${data.resolvedIp}`,
         rota_id: `${data.client.countryCode || "BR"}-${data.targetGeo.countryCode || "UN"}`,
@@ -242,7 +262,7 @@ export default function Hero() {
         dst_addr: data.resolvedIp,
         origem_pais: data.client.countryCode || "BR",
         destino_pais: data.targetGeo.countryCode || "UN",
-        origem_cidade: "Seu Dispositivo",
+        origem_cidade: clientCity,
         destino_cidade: data.targetGeo.city || "Destino",
         origem_ip: data.client.ip || "127.0.0.1",
         destino_fqdn: rawTarget,
@@ -484,7 +504,7 @@ export default function Hero() {
               <>
                 <span className="w-2 h-2 rounded-full bg-[#4cc28a]" />
                 <span>
-                  {customFlow.origem_cidade} ➔{" "}
+                  {customFlow.origem_cidade} ({customFlow.origem_ip}) ➔{" "}
                   <strong className="text-[#38c6e0] font-semibold">{customFlow.destino_cidade}</strong> ({customFlow.dst_addr})
                 </span>
               </>
