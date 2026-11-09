@@ -1,383 +1,1394 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preditor de Risco de Rede | Grupo 3</title>
-    <link rel="icon" type="image/png" href="logo_preditorderiscoderede.png">
-    <!-- Fontes do Google -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    <!-- Ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* === VARIÁVEIS CSS (Dark Theme Minimalista) === */
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #38bdf8; /* Azul Neon */
-            --success: #10b981; /* Verde OK */
-            --danger: #f43f5e; /* Vermelho Falha */
-            --warning: #f59e0b; /* Amarelo Risco */
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Preditor de Risco de Rede</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Como prevemos, com 12 minutos de antecedência, se um caminho da internet estará OK, em RISCO ou em FALHA, usando pings reais do RIPE Atlas e modelos em árvore.">
+<link rel="icon" href="img/logo_preditorderiscoderede.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
+<style>
+/* Layout: artigo de coluna única (≈42rem de texto, figuras até 62rem), cabeçalho fixo com progresso de leitura,
+   faixa navy no topo vinda do logo; seções numeradas na ordem de leitura do artigo. */
+:root {
+  /* cor */
+  --navy: #0b1a2e;          /* faixa do topo e cabeçalho */
+  --navy-2: #12273f;
+  --paper: #f2f5f8;         /* fundo da página, cinza levemente azulado */
+  --surface: #ffffff;       /* figuras e caixas */
+  --ink: #13233a;
+  --ink-2: #33475e;
+  --muted: #5d6e82;
+  --line: #d8e1ea;
+  --line-2: #e9eef3;
+  --accent: #0e8fae;        /* ciano do logo, escurecido para texto */
+  --accent-strong: #0b7290;
+  --accent-soft: #e2f3f7;
+  --code-bg: #eaf0f5;
+  /* classes do problema (semânticas, não são o acento) */
+  --ok: #1d8656;  --ok-bg: #e2f4ea;
+  --risco: #9a6400; --risco-bg: #fbf0d4;
+  --falha: #c2323e; --falha-bg: #fbe7e9;
+  /* séries dos modelos (ordem fixa) */
+  --m-arvore: #00879e;
+  --m-rf: #6a4bc4;
+  --m-base: #8b97a6;
+  /* sobre a faixa navy (igual nos dois temas) */
+  --on-navy: #e8eff7;
+  --on-navy-2: #a9bacd;
+  --cyan: #38c6e0;
+  /* tipo */
+  --display: "Archivo", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --body: "Source Serif 4", Charter, "Iowan Old Style", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* medidas */
+  --header-h: 60px;
+  --text-w: 75rem;
+  --wide-w: 76rem;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(11, 26, 46, .06), 0 6px 18px rgba(11, 26, 46, .05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d1724; --surface: #132235; --ink: #e5edf6; --ink-2: #c3d0de; --muted: #93a4b8;
+    --line: #26384d; --line-2: #1b2b3f; --accent: #4cc3dc; --accent-strong: #7fd6e8; --accent-soft: #10303d;
+    --code-bg: #0f1d2d;
+    --ok: #4cc28a; --ok-bg: #12301f; --risco: #e2ad3f; --risco-bg: #33280e; --falha: #f07a83; --falha-bg: #3a1a1e;
+    --m-arvore: #16a3b8; --m-rf: #8d72e6; --m-base: #7c8a9b;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0d1724; --surface: #132235; --ink: #e5edf6; --ink-2: #c3d0de; --muted: #93a4b8;
+  --line: #26384d; --line-2: #1b2b3f; --accent: #4cc3dc; --accent-strong: #7fd6e8; --accent-soft: #10303d;
+  --code-bg: #0f1d2d;
+  --ok: #4cc28a; --ok-bg: #12301f; --risco: #e2ad3f; --risco-bg: #33280e; --falha: #f07a83; --falha-bg: #3a1a1e;
+  --m-arvore: #16a3b8; --m-rf: #8d72e6; --m-base: #7c8a9b;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
 
-        /* === RESET E BASE === */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.7;
-            overflow-x: hidden;
-        }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 400 1.0625rem/1.7 var(--body); -webkit-font-smoothing: antialiased;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--navy); }
+img { max-width: 100%; height: auto; }
+a { color: var(--accent-strong); text-underline-offset: 3px; }
+a:hover { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 4px; }
+strong { font-weight: 650; }
+code, kbd { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+p code, li code, dd code, figcaption code { overflow-wrap: anywhere; }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--surface); color: var(--ink); padding: 8px 12px; z-index: 100; }
+.skip:focus { left: 16px; }
 
-        /* === NAVEGAÇÃO === */
-        nav {
-            position: fixed;
-            top: 0; width: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            border-bottom: 1px solid #334155;
-        }
-        nav .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 0.6rem; }
-        nav .logo img { height: 40px; width: 40px; border-radius: 8px; }
-        .hero-logo { width: 180px; max-width: 45vw; border-radius: 24px; margin-bottom: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
-        nav ul { list-style: none; display: flex; gap: 1.5rem; }
-        nav a { color: var(--text-main); text-decoration: none; font-weight: 600; transition: 0.3s; font-size: 0.95rem; }
-        nav a:hover { color: var(--primary); }
+/* ---------- cabeçalho ---------- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; height: var(--header-h);
+  background: var(--navy); color: var(--on-navy); border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.topbar-in { height: 100%; max-width: 76rem; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; min-width: 0; }
+.brand img { width: 34px; height: 34px; border-radius: 8px; }
+.brand b { font: 700 .98rem/1.1 var(--display); display: block; letter-spacing: .01em; }
+.brand small { font: 400 .74rem/1.2 var(--display); color: var(--on-navy-2); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.04); color: var(--on-navy);
+  font: 600 .86rem var(--display); cursor: pointer; text-decoration: none;
+}
+.btn-ghost:hover { background: rgba(255,255,255,.1); color: var(--on-navy); }
+.btn-ghost svg { width: 16px; height: 16px; }
+.progress { position: absolute; left: 0; bottom: -1px; height: 3px; width: 100%; transform-origin: 0 50%; transform: scaleX(0); background: var(--cyan); }
+@media (max-width: 560px) { .brand small, .hide-sm { display: none; } }
 
-        /* === HERO SECTION === */
-        header.hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 2rem;
-            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-        }
-        .hero h1 { font-size: 3.8rem; margin-bottom: 1rem; line-height: 1.1; }
-        .hero h1 span { color: var(--primary); }
-        .typewriter { font-family: 'Fira Code', monospace; color: var(--text-muted); font-size: 1.2rem; margin-bottom: 2.5rem; min-height: 30px;}
-        .btn {
-            padding: 12px 28px; background: var(--primary); color: #000; 
-            border: none; border-radius: 5px; font-weight: 800; font-size: 1.1rem;
-            text-decoration: none; transition: 0.3s; cursor: pointer; display: inline-block;
-        }
-        .btn:hover { box-shadow: 0 0 15px var(--primary); transform: translateY(-2px); }
+/* gaveta de seções */
+.drawer-backdrop { position: fixed; inset: 0; background: rgba(5, 12, 22, .45); z-index: 70; }
+.drawer {
+  position: fixed; z-index: 80; top: 0; bottom: 0; right: 0; width: min(22rem, 100%);
+  background: var(--surface); color: var(--ink); box-shadow: -10px 0 40px rgba(5,12,22,.25);
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) max(20px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 20px) 20px;
+  overflow-y: auto; transform: translateX(105%); transition: transform .28s cubic-bezier(.2,.7,.2,1);
+}
+.drawer.open { transform: none; }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.drawer-head b { font: 700 1rem var(--display); }
+.drawer-close { border: 1px solid var(--line); background: transparent; color: var(--ink); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
+.drawer ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+.drawer li a {
+  display: flex; gap: 10px; padding: 9px 10px; border-radius: 8px; color: var(--ink-2); text-decoration: none;
+  font: 500 .93rem/1.35 var(--display);
+}
+.drawer li a:hover { background: var(--line-2); color: var(--ink); }
+.drawer li a.ativo { background: var(--accent-soft); color: var(--accent-strong); font-weight: 650; }
+.drawer li a span { font-family: var(--mono); font-size: .8rem; color: var(--muted); min-width: 1.4em; padding-top: 1px; }
+.drawer .extra { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 10px; }
 
-        /* === SEÇÕES E CARDS === */
-        section { padding: 5rem 2rem 2rem; max-width: 1200px; margin: auto; }
-        section h2 { font-size: 2.2rem; margin-bottom: 1.5rem; color: var(--primary); border-bottom: 2px solid var(--card-bg); padding-bottom: 10px; }
-        
-        .card {
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            margin-bottom: 2rem;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .card h3 { margin-bottom: 1rem; font-size: 1.4rem; color: #e2e8f0; }
+/* ---------- topo ---------- */
+.hero { background: var(--navy); color: var(--on-navy); position: relative; overflow: hidden; }
+.hero-in { max-width: 66rem; margin: 0 auto; padding-block: 56px 72px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: center; }
+.eyebrow { font: 600 .78rem/1.3 var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); margin: 0 0 14px; }
+.hero h1 { font: 800 clamp(2.1rem, 5.2vw, 3.5rem)/1.05 var(--display); letter-spacing: -.02em; margin: 0 0 18px; text-wrap: balance; color: #fff; }
+.hero .dek { font-size: 1.16rem; line-height: 1.6; color: var(--on-navy); max-width: 36rem; margin: 0 0 22px; }
+.hero .meta { font: 500 .85rem/1.5 var(--display); color: var(--on-navy-2); margin: 0 0 26px; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 999px;
+  font: 650 .92rem var(--display); text-decoration: none; border: 1px solid transparent; cursor: pointer;
+}
+.btn-primary { background: var(--cyan); color: #04202a; }
+.btn-primary:hover { background: #63d4e8; color: #04202a; }
+.btn-line { border-color: rgba(255,255,255,.25); color: var(--on-navy); }
+.btn-line:hover { background: rgba(255,255,255,.08); color: #fff; }
+.hero-logo { width: 220px; border-radius: 22px; box-shadow: 0 20px 50px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.08); }
+.pulse { position: absolute; left: 0; right: 0; bottom: 10px; width: 100%; height: 46px; color: var(--cyan); opacity: .55; pointer-events: none; }
+.pulse path { stroke-dasharray: 2600; stroke-dashoffset: 2600; animation: traco 2.6s .2s cubic-bezier(.4,0,.2,1) forwards; }
+@keyframes traco { to { stroke-dashoffset: 0; } }
+@media (max-width: 760px) { .hero-in { grid-template-columns: 1fr; padding-block: 36px 64px; } .hero-logo { display: none; } }
 
-        .highlight-box {
-            background: rgba(56, 189, 248, 0.1);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-            font-style: italic;
-            border-left: 3px solid var(--primary);
-        }
+/* ---------- artigo ---------- */
+main { padding-block: 8px 40px; }
+.secao { max-width: var(--text-w); margin: 0 auto; padding-top: 48px; }
+.secao > h2 {
+  font: 800 clamp(1.55rem, 3.2vw, 2.05rem)/1.18 var(--display); letter-spacing: -.015em; margin: 0 0 18px;
+  display: flex; gap: 14px; align-items: flex-start; text-wrap: balance;
+}
+.num {
+  flex: none; display: inline-grid; place-items: center; width: 34px; height: 34px; margin-top: 2px;
+  border-radius: 9px; background: var(--navy); color: var(--cyan); font: 700 .95rem var(--mono);
+}
+:root[data-theme="dark"] .num { background: var(--accent-soft); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .num { background: var(--accent-soft); } }
+h3 { font: 700 1.2rem/1.3 var(--display); margin: 34px 0 10px; letter-spacing: -.005em; }
+h4 { font: 700 1rem/1.35 var(--display); margin: 22px 0 6px; }
+p { margin: 0 0 16px; }
+ul, ol { margin: 0 0 16px; padding-left: 1.3em; }
+li { margin-bottom: 6px; }
+li::marker { color: var(--muted); }
+.lead { font-size: 1.18rem; line-height: 1.65; color: var(--ink-2); }
+.mono { font-family: var(--mono); }
+.tnum { font-variant-numeric: tabular-nums; }
+.wide { max-width: var(--wide-w); margin-left: auto; margin-right: auto; }
+.tabela-wrap.wide th:first-child { min-width: 11rem; }
+.secao .wide { margin-left: calc((var(--text-w) - min(var(--wide-w), 100vw - 32px)) / 2); margin-right: calc((var(--text-w) - min(var(--wide-w), 100vw - 32px)) / 2); }
+@media (max-width: 700px) { .secao .wide { margin-left: 0; margin-right: 0; } }
 
-        /* === VÍDEO RESPONSIVO === */
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%; /* Proporção 16:9 */
-            height: 0;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid #334155;
-            margin: 2rem 0;
-        }
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-        }
+/* pílulas de classe */
+.tag { display: inline-block; font: 700 .74rem/1 var(--display); letter-spacing: .05em; padding: 5px 8px 4px; border-radius: 6px; vertical-align: .08em; }
+.tag.ok { background: var(--ok-bg); color: var(--ok); }
+.tag.risco { background: var(--risco-bg); color: var(--risco); }
+.tag.falha { background: var(--falha-bg); color: var(--falha); }
 
-        /* === BLOCOS DE CÓDIGO (API) === */
-        pre {
-            background: #000;
-            padding: 1.5rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Fira Code', monospace;
-            color: var(--success);
-            margin: 1rem 0;
-            border: 1px solid #334155;
-        }
+/* resumo, avisos */
+.resumo { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow); margin: 8px 0 22px; }
+.resumo dl { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 10px 18px; margin: 0; }
+.resumo dt { font: 650 .8rem/1.5 var(--display); text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding-top: 3px; }
+.resumo dd { margin: 0; }
+@media (max-width: 560px) { .resumo dl { grid-template-columns: 1fr; gap: 2px; } .resumo dd { margin-bottom: 10px; } }
+.nota { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 0 0 20px; color: var(--ink-2); }
+.nota.alerta { border-color: var(--risco); background: var(--risco-bg); }
+.nota > :last-child { margin-bottom: 0; }
+.nota b:first-child { font-family: var(--display); color: var(--ink); }
 
-        /* === STATUS BADGES === */
-        .badge { padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; margin: 0 5px; }
-        .b-ok { background: var(--success); color: #000; }
-        .b-risco { background: var(--warning); color: #000; }
-        .b-falha { background: var(--danger); color: #fff; }
-        
-        /* === GRID DE DADOS === */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        .stat-item {
-            background: #0f172a;
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #334155;
-        }
-        .stat-item h4 { color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem; }
+/* números grandes */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 6px 0 24px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+.stat b { display: block; font: 800 1.55rem/1.1 var(--display); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.stat span { display: block; font: 500 .82rem/1.35 var(--display); color: var(--muted); margin-top: 4px; }
+@media (max-width: 640px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-        /* === ANIMAÇÕES (Scroll Reveal) === */
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+/* figuras */
+figure.fig { margin: 26px 0 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px 16px; box-shadow: var(--shadow); }
+.fig-t { font: 700 1rem/1.35 var(--display); margin: 0 0 4px; }
+.fig-s { font: 400 .86rem/1.45 var(--display); color: var(--muted); margin: 0 0 12px; }
+figure.fig figcaption { font: 400 .88rem/1.55 var(--display); color: var(--muted); border-top: 1px solid var(--line-2); padding-top: 12px; margin-top: 12px; }
+figure.fig figcaption b { color: var(--ink-2); }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--display); fill: var(--muted); font-size: 11px; }
+.chart .lbl-strong { fill: var(--ink); font-weight: 650; }
+.chart .grid line { stroke: var(--line-2); }
+.chart .axis line, .chart .axis path { stroke: var(--line); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 500 .84rem var(--display); color: var(--ink-2); margin: 0 0 10px; padding: 0; list-style: none; }
+.legend li { display: inline-flex; align-items: center; gap: 7px; margin: 0; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.tip {
+  position: absolute; pointer-events: none; z-index: 5; background: var(--navy); color: var(--on-navy);
+  font: 500 .8rem/1.4 var(--display); padding: 8px 10px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  white-space: nowrap; transform: translate(-50%, calc(-100% - 10px));
+}
+.tip b { color: #fff; }
+details.dados { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
+details.dados summary { cursor: pointer; font: 650 .86rem var(--display); color: var(--accent-strong); padding: 4px 0; }
+details.dados .tabela-wrap { margin-top: 8px; max-height: 18rem; overflow: auto; }
 
-        /* === FOOTER === */
-        footer {
-            text-align: center; padding: 4rem 2rem; background: var(--card-bg);
-            border-top: 1px solid #334155; margin-top: 4rem;
-        }
-        footer a { color: var(--primary); text-decoration: none; transition: 0.3s;}
-        footer a:hover { color: #fff; }
-    </style>
+/* tabelas */
+.tabela-wrap { overflow-x: auto; margin: 0 0 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font: 400 .9rem/1.45 var(--display); }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+thead th { font-weight: 700; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); background: var(--line-2); border-bottom-color: var(--line); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.destaque td { background: var(--accent-soft); font-weight: 650; }
+td code { white-space: nowrap; }
+
+/* matrizes de confusão */
+.matrizes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 860px) { .matrizes { grid-template-columns: minmax(0, 1fr); max-width: 24rem; } }
+.matriz h4 { margin: 0 0 8px; display: flex; align-items: center; gap: 8px; font-size: .95rem; }
+.matriz h4 i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.matriz table { table-layout: fixed; font-size: .8rem; }
+.matriz th, .matriz td { padding: 6px 4px; text-align: center; border: 2px solid var(--surface); }
+.matriz thead th { background: none; font-size: .68rem; letter-spacing: .04em; text-transform: none; color: var(--muted); }
+.matriz tbody th { font-weight: 650; color: var(--muted); font-size: .72rem; background: none; text-align: right; padding-right: 8px; width: 4.6rem; }
+.matriz td { border-radius: 6px; font-variant-numeric: tabular-nums; line-height: 1.25; }
+.matriz td b { display: block; font-size: .95rem; }
+.matriz td span { font-size: .7rem; opacity: .85; }
+.matriz-eixo { font: 500 .74rem var(--display); color: var(--muted); text-align: center; margin-top: 4px; }
+
+/* diagrama do sistema */
+.pipeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .pipeline { grid-template-columns: minmax(0, 1fr); } }
+.camada { border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--paper); }
+.camada > b { display: block; font: 700 .78rem var(--display); text-transform: uppercase; letter-spacing: .08em; color: var(--accent-strong); margin-bottom: 2px; }
+.camada > small { display: block; font: 500 .8rem var(--display); color: var(--muted); margin-bottom: 10px; }
+.passo { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font: 500 .84rem/1.4 var(--display); }
+.passo b { display: block; font-weight: 700; color: var(--ink); }
+.passo span { color: var(--muted); font-size: .78rem; }
+.passo + .passo { margin-top: 22px; position: relative; }
+.passo + .passo::before { content: ""; position: absolute; left: 50%; top: -18px; height: 14px; border-left: 1.5px solid var(--muted); }
+.passo + .passo::after { content: ""; position: absolute; left: calc(50% - 4px); top: -8px; border: 4px solid transparent; border-top-color: var(--muted); }
+.passo.final { border-color: var(--accent); background: var(--accent-soft); }
+
+/* árvore desenhada */
+.arvore-svg text { font-family: var(--display); }
+.arvore-svg .no rect { fill: var(--surface); stroke: var(--line); }
+.arvore-svg .no text { fill: var(--ink); font-size: 12.5px; font-weight: 600; }
+.arvore-svg .ramo { stroke: var(--muted); fill: none; stroke-width: 1.2; }
+.arvore-svg .rot { fill: var(--muted); font-size: 11px; }
+.arvore-svg .folha.ok rect { fill: var(--ok-bg); stroke: var(--ok); }
+.arvore-svg .folha.risco rect { fill: var(--risco-bg); stroke: var(--risco); }
+.arvore-svg .folha.falha rect { fill: var(--falha-bg); stroke: var(--falha); }
+.arvore-svg .folha text { font-size: 12px; font-weight: 700; }
+.arvore-svg .folha.ok text { fill: var(--ok); }
+.arvore-svg .folha.risco text { fill: var(--risco); }
+.arvore-svg .folha.falha text { fill: var(--falha); }
+.arvore-svg .folha .n { font-weight: 500; fill: var(--muted); font-size: 10.5px; }
+.rolagem { overflow-x: auto; }
+.rolagem > svg { min-width: 640px; }
+
+/* cartões dos modelos */
+.modelos { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.modelo, figure.fig, .camada { min-width: 0; }
+.modelo { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; }
+.modelo-h { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
+.modelo-h i { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.modelo-h h3 { margin: 0; }
+.modelo-h small { margin-left: auto; font: 600 .76rem var(--display); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.modelo .duas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 22px; margin-top: 8px; }
+.modelo .duas h4 { margin: 10px 0 2px; font-size: .86rem; color: var(--accent-strong); }
+.modelo .duas p { font-size: .97rem; margin-bottom: 4px; }
+@media (max-width: 620px) { .modelo .duas { grid-template-columns: minmax(0, 1fr); } }
+details.formula { margin: 12px 0 0; border: 1px solid var(--line); border-radius: 8px; padding: 0 14px; background: var(--paper); }
+details.formula summary { cursor: pointer; padding: 10px 0; font: 650 .88rem var(--display); }
+details.formula[open] { padding-bottom: 12px; }
+.eq { font-family: var(--mono); font-size: .95rem; background: var(--code-bg); padding: 10px 12px; border-radius: 6px; overflow-x: auto; white-space: nowrap; margin: 6px 0 10px; }
+
+/* código */
+pre { margin: 0 0 20px; background: #0d1b2c; color: #d9e4f0; border-radius: 10px; padding: 16px 18px; overflow-x: auto; font: 400 .84rem/1.6 var(--mono); }
+pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
+.pre-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; font: 600 .78rem var(--display); color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin: 18px 0 6px; }
+.copiar { font: 600 .78rem var(--display); border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 6px; padding: 4px 10px; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.copiar:hover { border-color: var(--accent); color: var(--accent-strong); }
+.c { color: #7f93aa; } .s { color: #9fd8a8; } .k { color: #7cc8ff; } .nn { color: #f4c37d; }
+.metodo { display: inline-block; font: 700 .72rem var(--mono); background: var(--ok-bg); color: var(--ok); padding: 3px 7px; border-radius: 5px; margin-right: 8px; }
+.abas { display: flex; gap: 6px; margin: 4px 0 0; flex-wrap: wrap; }
+.aba { font: 650 .84rem var(--display); border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.aba[aria-selected="true"] { background: var(--navy); border-color: var(--navy); color: var(--on-navy); }
+
+/* destaque do melhor modelo */
+.campeao { background: var(--navy); color: var(--on-navy); border-radius: 16px; padding: 26px 26px 22px; margin: 6px 0 26px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,.06); }
+.campeao .selo { display: inline-block; font: 700 .74rem var(--display); letter-spacing: .08em; text-transform: uppercase; background: rgba(56, 198, 224, .14); color: var(--cyan); padding: 6px 10px; border-radius: 999px; margin-bottom: 12px; }
+.campeao h3 { font: 800 clamp(1.8rem, 4vw, 2.5rem)/1.05 var(--display); margin: 0 0 10px; color: #fff; }
+.campeao p { color: var(--on-navy); max-width: 40rem; }
+.campeao-nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.campeao-nums div { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: 10px; padding: 12px; }
+.campeao-nums b { display: block; font: 800 1.45rem/1.1 var(--display); color: #fff; font-variant-numeric: tabular-nums; }
+.campeao-nums span { display: block; font: 500 .76rem/1.35 var(--display); color: var(--on-navy-2); margin-top: 4px; }
+@media (max-width: 640px) { .campeao-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* vídeo e links */
+.video-card { display: flex; gap: 16px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; text-decoration: none; color: var(--ink); margin: 0 0 22px; }
+.video-card:hover { border-color: var(--accent); color: var(--ink); }
+.play { flex: none; width: 52px; height: 52px; border-radius: 50%; background: var(--navy); display: grid; place-items: center; }
+.play svg { width: 20px; height: 20px; fill: var(--cyan); margin-left: 3px; }
+.video-card b { display: block; font: 700 1rem var(--display); }
+.video-card span { display: block; font: 400 .88rem var(--display); color: var(--muted); }
+.links { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; }
+.links ul { list-style: none; padding: 0; margin: 0; }
+.links li { padding: 10px 0; border-bottom: 1px solid var(--line-2); }
+.links li b { display: block; font: 700 .95rem var(--display); }
+.links li a { font: 400 .88rem var(--mono); word-break: break-all; }
+.qr { width: 150px; border-radius: 10px; background: #fff; padding: 6px; border: 1px solid var(--line); }
+@media (max-width: 560px) { .links { grid-template-columns: minmax(0, 1fr); } }
+
+/* autores */
+.autores { display: grid; grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr)); gap: 14px; }
+.autor { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.autor img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.autor b { font: 700 .95rem/1.3 var(--display); }
+.autor span { font: 400 .84rem/1.45 var(--display); color: var(--muted); }
+
+footer.rodape { background: var(--navy); color: var(--on-navy-2); margin-top: 48px; }
+footer.rodape .in { max-width: 66rem; margin: 0 auto; padding-block: 28px calc(28px + env(safe-area-inset-bottom, 0px)); font: 400 .86rem/1.6 var(--display); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+footer.rodape a { color: var(--cyan); }
+
+.voltar-topo { position: fixed; right: max(16px, calc(env(safe-area-inset-right, 0px) + 16px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); z-index: 40; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); box-shadow: var(--shadow); cursor: pointer; display: grid; place-items: center; }
+.voltar-topo svg { width: 18px; height: 18px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .pulse path { animation: none; stroke-dashoffset: 0; }
+  .drawer { transition: none; }
+}
+
+</style>
 </head>
 <body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
 
-    <!-- NAV -->
-    <nav>
-        <div class="logo"><img src="logo_preditorderiscoderede.png" alt="Logo do Preditor de Risco de Rede"> Preditor de Risco de Rede</div>
-        <ul class="nav-links">
-            <li><a href="#pitch">Pitch</a></li>
-            <li><a href="#problema">O Problema</a></li>
-            <li><a href="#dados">Os Dados</a></li>
-            <li><a href="#campeao">O Modelo</a></li>
-            <li><a href="#api">API</a></li>
-        </ul>
-    </nav>
+<header class="topbar gutter">
+  <div class="topbar-in">
+    <a class="brand" href="#topo">
+      <img src="img/logo_preditorderiscoderede.png" alt="" width="34" height="34">
+      <span><b>Preditor de Risco de Rede</b><small>Artigo do projeto · Grupo 3</small></span>
+    </a>
+    <div class="topbar-actions">
+      <a class="btn-ghost hide-sm" href="https://github.com/Yuoneeh/Projeto_Redes_EstDados" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.71 1.23 1.88.87 2.34.67.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.66 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg>
+        Repositório
+      </a>
+      <button class="btn-ghost" id="abrir-secoes" aria-controls="secoes" aria-expanded="false">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 3.5h12v1.5H2zm0 3.75h12v1.5H2zM2 11h12v1.5H2z"/></svg>
+        Seções
+      </button>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"></div>
+</header>
 
-    <!-- HERO -->
-    <header class="hero">
-        <img class="hero-logo" src="logo_preditorderiscoderede.png" alt="Logo do Preditor de Risco de Rede">
-        <h1>Prevendo o <span>Caos</span> na Rede</h1>
-        <p class="typewriter" id="typewriter"></p>
-        <a href="#pitch" class="btn">Conheça o Projeto <i class="fa-solid fa-arrow-down"></i></a>
-    </header>
+<div class="drawer-backdrop" id="fundo-gaveta" hidden></div>
+<nav class="drawer" id="secoes" aria-label="Seções do artigo" hidden>
+  <div class="drawer-head"><b>Neste artigo</b><button class="drawer-close" id="fechar-secoes" aria-label="Fechar seções">✕</button></div>
+  <ol>
+    <li><a href="#introducao"><span>1</span>Introdução</a></li>
+    <li><a href="#problema"><span>2</span>O problema e quem usa</a></li>
+    <li><a href="#dados"><span>3</span>Os dados</a></li>
+    <li><a href="#sistema"><span>4</span>Como o sistema funciona</a></li>
+    <li><a href="#modelos"><span>5</span>Os modelos em árvore</a></li>
+    <li><a href="#resultados"><span>6</span>Resultados e comparação</a></li>
+    <li><a href="#destaque"><span>7</span>Destaque: o melhor modelo</a></li>
+    <li><a href="#api"><span>8</span>Como usar a API</a></li>
+    <li><a href="#limitacoes"><span>9</span>Limitações e próximos passos</a></li>
+    <li><a href="#conclusao"><span>10</span>Conclusão</a></li>
+  </ol>
+  <ol class="extra">
+    <li><a href="#links"><span>↗</span>Links e repositório</a></li>
+    <li><a href="#autores"><span>@</span>Autores</a></li>
+    <li><a href="#referencias"><span>§</span>Referências</a></li>
+  </ol>
+</nav>
 
-    <main>
-        <!-- VÍDEO PITCH -->
-        <section id="pitch" class="reveal">
-            <h2><i class="fa-brands fa-youtube"></i> Nosso Projeto em 90 Segundos</h2>
-            <p>Descubra como estruturamos o Preditor de Falhas e Riscos (RIPE Mesh) para antecipar quedas de conexão globais.</p>
-            <div class="video-wrapper">
-                <!-- SUBSTITUA O LINK ABAIXO PELO EMBED DO SEU VÍDEO NO YOUTUBE -->
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/h0cTuHPZZOc" title="Vídeo Pitch Grupo 3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        </section>
+<section class="hero gutter" id="topo">
+  <div class="hero-in">
+    <div>
+      <p class="eyebrow">Projeto interdisciplinar · Grupo 3 · 4º semestre CC</p>
+      <h1>Prever a falha antes que a rede caia</h1>
+      <p class="dek">Medimos pings reais entre servidores de 15 países, aprendemos o comportamento normal de cada caminho e treinamos modelos em árvore para dizer, com 12 minutos de antecedência, se ele estará <strong>OK</strong>, em <strong>RISCO</strong> ou em <strong>FALHA</strong>.</p>
+      <p class="meta">Estrutura de Dados II · Redes de Computadores · Análise e Projeto de Sistemas<br>Centro Universitário Braz Cubas · novembro de 2026</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#introducao">Começar a leitura</a>
+        <a class="btn btn-line" href="https://youtu.be/h0cTuHPZZOc" target="_blank" rel="noopener">Ver o pitch de 90 s</a>
+      </div>
+    </div>
+    <img class="hero-logo" src="img/logo_preditorderiscoderede.png" alt="Logo do Preditor de Risco de Rede: uma árvore com três folhas, verde, amarela e vermelha, sobre uma linha de batimento" width="220" height="220">
+  </div>
+  <svg class="pulse" viewBox="0 0 1200 46" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 30H380l14-14 10 24 12-34 14 30 10-6H700l12-18 10 28 14-26 12 16H1200" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  </svg>
+</section>
 
-        <!-- O PROBLEMA -->
-        <section id="problema" class="reveal">
-            <h2><i class="fa-solid fa-triangle-exclamation"></i> Quem precisa saber o futuro?</h2>
-            <div class="card">
-                <p>Você já percebeu como a internet parece mágica até que a sua série trava na melhor parte? Ou pior: quando o sistema do banco cai no momento que você mais precisa fazer um pagamento?</p>
-                <br>
-                <p>A internet global é sustentada por cabos submarinos e roteadores enormes. Para empresas que dependem de infraestrutura crítica (hospitais, bancos, plataformas de streaming), o monitoramento tradicional só avisa que a rede caiu <strong>quando ela já caiu</strong>.</p>
-                <div class="highlight-box">
-                    <strong>Nossa Solução:</strong> Um modelo de Machine Learning que enxerga os "sintomas invisíveis" da rede (como tremores na latência) e emite um alerta com <strong>12 minutos de antecedência</strong>. Tempo suficiente para os engenheiros mudarem a rota antes do sistema cair.
-                </div>
-            </div>
-        </section>
+<main id="conteudo" class="gutter">
 
-        <!-- OS DADOS -->
-        <section id="dados" class="reveal">
-            <h2><i class="fa-solid fa-database"></i> Como "ouvimos" a internet mundial?</h2>
-            <p>Para prever o futuro da internet, precisamos dos melhores dados do mundo. Recorremos ao <strong>RIPE Atlas</strong>, a maior rede de telemetria e sondas de internet ativa do planeta.</p>
-            
-            <div class="card">
-                <h3>1. A Origem e o Volume</h3>
-                <p>Criamos um script modularizado em Python que monitorou pings entre dezenas de servidores (sondas) na <strong>Alemanha, Brasil, Estados Unidos, Holanda e Singapura</strong>. Observamos a rede a cada 4 minutos durante 14 dias ininterruptos.</p>
-                
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <h4>1.4M+</h4>
-                        <p>Pacotes Analisados</p>
-                    </div>
-                    <div class="stat-item">
-                        <h4>14</h4>
-                        <p>Dias de Monitoramento</p>
-                    </div>
-                    <div class="stat-item">
-                        <h4>12 min</h4>
-                        <p>Horizonte de Previsão</p>
-                    </div>
-                </div>
-            </div>
+<!-- 1 -->
+<section class="secao" id="introducao">
+  <h2><span class="num">1</span>Introdução: do ping ao alerta</h2>
+  <p class="lead">Um link de internet raramente cai sem aviso. Antes da queda, a latência sobe, a variação do atraso aumenta e alguns pacotes se perdem. Este artigo conta como transformamos esses sinais em uma previsão: para cada caminho da rede, o que vai acontecer daqui a 12 minutos.</p>
+  <div class="resumo">
+    <dl>
+      <dt>Pergunta</dt><dd>Daqui a 12 minutos, este caminho estará <span class="tag ok">OK</span> <span class="tag risco">RISCO</span> ou <span class="tag falha">FALHA</span>?</dd>
+      <dt>Dados</dt><dd>Pings públicos do RIPE Atlas, a cada 4 minutos, durante 14 dias, em 157 caminhos de 14 rotas.</dd>
+      <dt>Modelos</dt><dd>Árvore de Decisão (também implementada à mão, em Estrutura de Dados II) e Random Forest, o modelo entregue.</dd>
+      <dt>Resultado</dt><dd>A Random Forest teve o melhor F1 macro do projeto no teste (0,584, contra 0,581 da árvore). Os dois modelos acertam quase sempre quando a rede mantém o estado e quase nunca quando ela muda de repente.</dd>
+    </dl>
+  </div>
+  <a class="video-card" href="https://youtu.be/h0cTuHPZZOc" target="_blank" rel="noopener">
+    <span class="play" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M5 3l12 7-12 7z"/></svg></span>
+    <span><b>Nosso projeto em 90 segundos</b><span>Vídeo pitch no YouTube (abre em nova aba)</span></span>
+  </a>
+</section>
 
-            <div class="card">
-                <h3>2. Limpeza e Variáveis Avançadas</h3>
-                <p>Não basta olhar para o tempo de resposta puro. 150 milissegundos é rápido se você está no Brasil falando com o Japão, mas é um desastre se o servidor for na rua de trás. Para isso, dividimos os dados em dois períodos:</p>
-                <ul>
-                    <li><strong>Período A (Baseline):</strong> Usamos os primeiros 7 dias para a inteligência artificial "aprender" o que é normal para cada rota (mediana, desvio).</li>
-                    <li><strong>Período B (Monitoramento):</strong> Transformamos os últimos 7 dias em <em>Métricas Relativas</em>, como o <strong>Z-Score Robusto</strong> e a variação do <strong>Jitter</strong> (variação do atraso).</li>
-                </ul>
-            </div>
-        </section>
+<!-- 2 -->
+<section class="secao" id="problema">
+  <h2><span class="num">2</span>O problema e quem usa o resultado</h2>
+  <p>A internet parece mágica até a série travar na melhor parte, ou até o sistema do banco cair na hora de um pagamento. Por trás disso há roteadores e cabos que degradam aos poucos. O monitoramento tradicional costuma avisar só quando a queda já aconteceu.</p>
+  <p>Um alerta por limite fixo também não resolve. Uma regra como "alertar se a latência passar de 100 ms" erra nos dois sentidos:</p>
+  <ul>
+    <li>um caminho Brasil → Japão vive acima de 250 ms e está perfeitamente saudável;</li>
+    <li>um caminho dentro da Alemanha que sobe de 9 ms para 20 ms está com problema, mesmo bem abaixo do limite.</li>
+  </ul>
+  <div class="nota"><b>Ideia central.</b> Distância não é defeito. Cada caminho é comparado com o seu próprio normal, e não com um número global.</div>
+  <h3>Quem usa a previsão</h3>
+  <p>Quem opera a rede: a equipe de um campus, de um provedor ou de um NOC (centro de operações de rede). Para cada caminho, a previsão ajuda a decidir entre três ações:</p>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Previsão para daqui a 12 min</th><th>Ação sugerida</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag ok">OK</span></td><td>Nada a fazer.</td></tr>
+        <tr><td><span class="tag risco">RISCO</span></td><td>Observar o caminho e preparar uma rota alternativa.</td></tr>
+        <tr><td><span class="tag falha">FALHA</span></td><td>Investigar agora ou desviar o tráfego.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-        <!-- A TECNOLOGIA E O CAMPEÃO -->
-        <section id="campeao" class="reveal">
-            <h2><i class="fa-solid fa-code-branch"></i> O Cérebro Artificial: Árvores de Decisão</h2>
-            <p>Nosso modelo toma decisões através de algoritmos de <strong>Árvores de Decisão (CART) e Random Forest</strong>. Em vez de ser uma "caixa preta" indecifrável, a árvore funciona como o jogo <em>Cara a Cara</em>. Ela faz perguntas em sequência aos dados, como:</p>
-            <br>
-            <p><i class="fa-solid fa-arrow-right" style="color:var(--primary)"></i> <em>A rede perdeu pacotes?</em> Se sim, o rótulo futuro será <span class="badge b-falha">FALHA</span>.</p>
-            <p><i class="fa-solid fa-arrow-right" style="color:var(--primary)"></i> <em>Nas últimas 5 medições, o Z-Score demonstrou risco?</em> Se sim, prevemos <span class="badge b-risco">RISCO</span>.</p>
-            <p><i class="fa-solid fa-arrow-right" style="color:var(--primary)"></i> <em>Caso contrário:</em> A rede está <span class="badge b-ok">OK</span>.</p>
-           
-            <div class="card" style="margin-top: 2.5rem;">
-                <h3 style="color: var(--primary);">🏆 Por que a Árvore Ajustada Venceu?</h3>
-                <p>Na nossa primeira tentativa manual, o algoritmo encontrava apenas 59% das anomalias ocultas. Então, aplicamos a <strong>Otimização de Hiperparâmetros (Grid Search)</strong> em nosso bloco de Validação. O resultado? O modelo atingiu <strong>100% de Recall para Riscos</strong> e um F1-Score Macro assustador de <strong>99.98%</strong>!</p>
-                <br>
-                <p><strong>Hiperparâmetros Mágicos:</strong></p>
-                <ul>
-                    <li><code>max_depth = 4</code>: Impede que a árvore decore os dados (overfitting), limitando ela a 4 perguntas de profundidade.</li>
-                    <li><code>min_samples_leaf = 50</code>: Exige que haja consistência. A máquina só assume uma regra se pelo menos 50 medições comprovarem aquele padrão.</li>
-                    <li><code>class_weight = 'balanced'</code>: Dá "pesos maiores" para os momentos de falha, equilibrando o fato de que a internet passa 90% do tempo funcionando bem.</li>
-                </ul>
-                <br>
-                <h3>Onde a IA ainda erra?</h3>
-                <p>Para testar o modelo pra valer, fizemos um <em>Teste Cego (Hold-Out de Protocolo B)</em> com rotas de países que a árvore nunca tinha visto. Ela acertou perfeitamente os desgastes progressivos. Contudo, se um cabo submarino for rompido fisicamente por uma âncora, sem <strong>nenhum aviso ou lentidão prévia</strong> nos 12 minutos anteriores, o modelo não consegue prever a queda, pois é uma pane súbita.</p>
-            </div>
-        </section>
+<!-- 3 -->
+<section class="secao" id="dados">
+  <h2><span class="num">3</span>Os dados: origem, variáveis, limpeza e tratamento</h2>
+  <h3>De onde vêm</h3>
+  <p>Usamos o <a href="https://atlas.ripe.net/" target="_blank" rel="noopener">RIPE Atlas</a>, uma rede mundial de sondas que medem a internet o tempo todo. Os servidores fixos dessa rede, chamados <em>anchors</em>, fazem ping uns nos outros a cada 240 segundos (o <em>anchoring mesh</em>), e os resultados são públicos.</p>
+  <p>Nosso coletor (<code>src/coletor_mesh.py</code>) só lê dados com <code>GET</code>: não cria medições e não gasta créditos. Escolhemos 14 rotas entre países, de origens em 8 países (AR, BR, DE, ES, IN, NL, US, ZA) para destinos em 12 (AR, BO, BR, DE, IN, JP, KE, PL, PT, SG, UY, ZA). Cada par <em>sonda de origem → IP de destino</em> é um <strong>fluxo</strong>, a unidade de todo o projeto.</p>
+  <div class="stats">
+    <div class="stat"><b>14 dias</b><span>de coleta: 7 de Período A e 7 de Período B</span></div>
+    <div class="stat"><b>157</b><span>fluxos com histórico suficiente (21 excluídos)</span></div>
+    <div class="stat"><b>441.940</b><span>medições no Período A, usadas para aprender o normal</span></div>
+    <div class="stat"><b>393.384</b><span>medições rotuladas no Período B (27/10 a 02/11/2026)</span></div>
+  </div>
 
-        <!-- OS RESULTADOS COM GRÁFICOS -->
-        <section id="resultados" class="reveal">
-            <h2><i class="fa-solid fa-chart-pie"></i> Os Resultados em Ação</h2>
-            <p>Os números comprovam a eficácia da nossa Árvore Ajustada no bloco de testes. Veja como o modelo se comportou face a rotas de internet inéditas:</p>
-            
-            <div class="card" style="margin-top: 2rem;">
-                <h3 style="color: var(--primary);">Matriz de Confusão (Previsão vs Realidade)</h3>
-                <!-- SUBSTITUA "matriz_confusao.png" PELO NOME DA VOSSA IMAGEM -->
-                <img src="matriz_confusao.png" alt="Gráfico da Matriz de Confusão" style="width: 100%; max-width: 600px; border-radius: 8px; margin: 1rem auto; display: block; border: 1px solid #334155;">
-                
-                <div class="highlight-box">
-                    <strong>Análise do Gráfico:</strong> A diagonal principal (onde as previsões coincidem com o estado real) concentra quase a totalidade dos dados. O modelo demonstrou um <strong>Recall de 100%</strong> para a classe de RISCO, significando que não deixou escapar absolutamente nenhum sinal de instabilidade. A taxa de falsos positivos foi estatisticamente irrelevante.
-                </div>
-            </div>
-            
-            <!-- Pode replicar o bloco acima se tiverem um gráfico de Importância das Variáveis (Feature Importance) -->
-        </section>
+  <figure class="fig wide" id="fig-medianas">
+    <p class="fig-t">Figura 1. O "normal" de cada fluxo é muito diferente</p>
+    <p class="fig-s">Mediana do tempo de ida e volta (RTT) de cada fluxo no Período A, em milissegundos.</p>
+    <div class="chart" id="chart-medianas"></div>
+    <figcaption><b>Como ler:</b> cada barra é um fluxo, do mais rápido para o mais lento. O normal vai de menos de 1 ms (dentro do Brasil) a 385 ms (Brasil → África do Sul). Por isso um limite global de latência não funciona, e o projeto compara cada medição com o normal do próprio fluxo.</figcaption>
+  </figure>
 
-        <!-- API E USO -->
-        <section id="api" class="reveal">
-            <h2><i class="fa-solid fa-plug"></i> Teste a nossa API</h2>
-            <p>O modelo foi empacotado (`.joblib`) e está pronto para produção. Um sistema em nuvem pode mandar o estado da rede via JSON, e a nossa IA devolve o que acontecerá 12 minutos depois.</p>
-            
-            <div class="card">
-                <h3>Sua Requisição (Dados atuais no instante T)</h3>
+  <h3>Período A: aprender o normal de cada fluxo</h3>
+  <p>Nos primeiros 7 dias, calculamos uma "ficha" por fluxo e depois a congelamos. Ela usa estatísticas robustas, que quase não se mexem com picos isolados:</p>
+  <ul>
+    <li><strong>mediana</strong> do RTT, o valor central;</li>
+    <li><strong>MAD</strong> (desvio absoluto mediano), a dispersão típica em torno da mediana;</li>
+    <li><strong>jitter típico</strong> e <strong>perda típica</strong>, também pela mediana.</li>
+  </ul>
+  <p>Fluxos com menos de 1.500 RTTs válidos no Período A (cerca de 60% do esperado) foram marcados como <code>baseline_insuficiente</code> e ficaram de fora.</p>
+
+  <h3>Período B: as 8 variáveis que o modelo enxerga</h3>
+  <p>Para cada medição do Período B, comparamos o valor atual com a ficha do fluxo. O modelo nunca vê a latência em milissegundos, o país ou o IP: só medidas relativas.</p>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Variável</th><th>Como é calculada</th><th>O que mede</th></tr></thead>
+      <tbody>
+        <tr><td><code>z_robusto</code></td><td>(RTT − mediana) ÷ (1,4826 × MAD)</td><td>Quantos "desvios típicos" acima do normal</td></tr>
+        <tr><td><code>aumento_pct</code></td><td>(RTT − mediana) ÷ mediana × 100</td><td>Aumento percentual da latência</td></tr>
+        <tr><td><code>jitter_relativo</code></td><td>jitter atual ÷ jitter típico</td><td>Instabilidade comparada ao normal</td></tr>
+        <tr><td><code>perda_pacotes</code></td><td>(enviados − recebidos) ÷ enviados × 100</td><td>Perda de pacotes na medição</td></tr>
+        <tr><td><code>timeout_atual</code></td><td>1 se não houve resposta, senão 0</td><td>Medição sem resposta</td></tr>
+        <tr><td><code>n5_timeout</code></td><td>Soma de timeouts nas 5 últimas medições</td><td>Falta de resposta recente</td></tr>
+        <tr><td><code>n5_aumento80</code></td><td>Quantas das 5 últimas subiram mais de 80%</td><td>Picos grandes recentes</td></tr>
+        <tr><td><code>n5_risco</code></td><td>Quantas das 5 últimas tiveram sinal de risco</td><td>Instabilidade acumulada</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>As variáveis <code>n5_*</code> olham as 5 últimas medições do mesmo fluxo (cerca de 20 minutos), sempre no passado. Elas dão "memória" ao modelo: um pico isolado pesa menos que uma sequência.</p>
+
+  <h3>Limpeza e tratamento</h3>
+  <ul>
+    <li><strong>Sem resposta não vira zero.</strong> A API devolve <code>avg: -1</code> quando nenhum pacote volta. Gravar 0 ms pareceria latência perfeita, então o RTT fica vazio e <code>timeout_atual</code> recebe 1.</li>
+    <li><strong>Jitter</strong> é o desvio-padrão dos RTTs de cada medição. Com menos de 2 respostas, fica vazio.</li>
+    <li><strong>Duplicatas</strong> com o mesmo fluxo e o mesmo horário são descartadas.</li>
+    <li><strong>Valores ausentes</strong> no Período B: 518 linhas sem RTT e 1.008 sem jitter. Antes do treino, viram valores neutros (<code>z_robusto</code> = 0, <code>aumento_pct</code> = 0, <code>jitter_relativo</code> = 1).</li>
+    <li><strong>Divisão por zero</strong> é evitada: se o MAD for 0, usa-se a distância interquartil com piso de 1 ms; se o jitter típico for 0, aplica-se uma regra fixa.</li>
+    <li><strong>Colunas proibidas:</strong> IP, país, rota e latência absoluta não entram no modelo. Com elas, a árvore aprende o atalho "caminho curto = OK", e não a anomalia.</li>
+  </ul>
+
+  <h3>Como cada medição ganha um rótulo</h3>
+  <p>A classe de cada medição sai de regras em ordem: a primeira que for verdadeira decide. FALHA vence RISCO, e RISCO vence OK.</p>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th class="n">Ordem</th><th>Condição</th><th>Classe</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td>perda de pacotes ≥ 10%</td><td><span class="tag falha">FALHA</span></td></tr>
+        <tr><td class="n">2</td><td>3 ou mais timeouts nas 5 últimas medições</td><td><span class="tag falha">FALHA</span></td></tr>
+        <tr><td class="n">3</td><td><code>z_robusto</code> ≥ 3,5</td><td><span class="tag falha">FALHA</span></td></tr>
+        <tr><td class="n">4</td><td>2 ou mais aumentos acima de 80% nas 5 últimas</td><td><span class="tag falha">FALHA</span></td></tr>
+        <tr><td class="n">5</td><td>sinal de risco agora (z entre 2 e 3,5, aumento entre 30% e 80% ou jitter 3× o normal) e em 2 das 5 últimas</td><td><span class="tag risco">RISCO</span></td></tr>
+        <tr><td class="n">6</td><td>nenhuma das anteriores</td><td><span class="tag ok">OK</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Na prática, 95% das FALHAs vieram da regra 3: um desvio estatístico forte da latência. Só 4% vieram de perda de pacotes. Neste projeto, FALHA significa sobretudo "o caminho saiu muito do seu normal", e não apenas "o link caiu".</p>
+
+  <h3>O alvo: o estado de daqui a 12 minutos</h3>
+  <p>Se o modelo aprendesse a classe do instante atual, ele só repetiria as regras acima. Por isso, cada linha recebe como alvo a classe do mesmo fluxo 3 medições depois (3 × 240 s = 12 minutos). O modelo vê o presente e prevê o futuro.</p>
+  <p>A divisão também respeita o tempo: em cada fluxo, os 50% mais antigos vão para treino, os 20% seguintes para validação e os 30% mais recentes para teste. Sortear linhas ao acaso misturaria passado e futuro e inflaria as notas.</p>
+
+  <figure class="fig wide" id="fig-blocos">
+    <p class="fig-t">Figura 2. A maior parte do tempo, a rede está OK</p>
+    <p class="fig-s">Distribuição do rótulo de 12 minutos à frente em cada bloco da divisão temporal.</p>
+    <div class="chart" id="chart-blocos"></div>
+    <figcaption><b>Como ler:</b> nos três blocos, OK fica entre 79% e 83% das linhas, FALHA entre 10% e 13% e RISCO entre 7% e 8%. Um modelo que sempre responde "OK" já acerta 83% no teste, então a acurácia sozinha engana. Por isso avaliamos com F1 macro e recall por classe.</figcaption>
+  </figure>
+</section>
+
+<!-- 4 -->
+<section class="secao" id="sistema">
+  <h2><span class="num">4</span>Como o sistema funciona</h2>
+  <p>O projeto é um pipeline em três camadas. Cada uma gera arquivos que a próxima lê, e cada etapa pode ser auditada no repositório.</p>
+  <figure class="fig wide">
+    <p class="fig-t">Figura 3. Do ping à classe prevista</p>
+    <div class="pipeline">
+      <div class="camada"><b>Camada 1</b><small>Coleta (Redes)</small>
+        <div class="passo"><b>API do RIPE Atlas</b><span>pings do mesh, a cada 240 s</span></div>
+        <div class="passo"><b>coletor_mesh.py</b><span>retentativas, 1 dia por pedido, sem rótulos</span></div>
+        <div class="passo"><b>ripe_mesh_ping.csv</b><span>uma linha por medição + metadados</span></div>
+      </div>
+      <div class="camada"><b>Camada 2</b><small>Baseline e rótulos</small>
+        <div class="passo"><b>Ficha por fluxo</b><span>mediana, MAD, jitter típico (Período A)</span></div>
+        <div class="passo"><b>8 variáveis relativas + classe</b><span>Período B, regras em ordem</span></div>
+        <div class="passo"><b>Rótulo de 12 min à frente</b><span>divisão temporal 50 / 20 / 30</span></div>
+      </div>
+      <div class="camada"><b>Camada 3</b><small>Modelos (Estrutura de Dados II)</small>
+        <div class="passo"><b>Árvore de Decisão</b><span>implementação manual e scikit-learn</span></div>
+        <div class="passo"><b>Random Forest</b><span>100 árvores, modelo entregue em 04/11</span></div>
+        <div class="passo final"><b>Classe prevista</b><span>OK, RISCO ou FALHA em 12 min; teste medido uma vez</span></div>
+      </div>
+    </div>
+    <figcaption><b>Como ler:</b> as setas seguem o caminho dos dados, de cima para baixo em cada camada e da esquerda para a direita entre camadas.</figcaption>
+  </figure>
+</section>
+
+<!-- 5 -->
+<section class="secao" id="modelos">
+  <h2><span class="num">5</span>Os modelos em árvore</h2>
+  <p>O projeto usa dois modelos com a mesma peça básica, a árvore de decisão. A diferença é que a Random Forest junta cem delas e decide por voto.</p>
+
+  <div class="modelos">
+    <article class="modelo">
+      <div class="modelo-h"><i style="background:var(--m-arvore)"></i><h3>Árvore de Decisão</h3><small>uma árvore</small></div>
+      <p>Funciona como o jogo Cara a Cara: faz uma pergunta de sim ou não sobre uma variável, segue o ramo da resposta e repete até chegar a uma folha, que traz a classe.</p>
+      <figure class="fig" style="margin:14px 0 6px">
+        <p class="fig-t">Figura 4. A árvore que implementamos à mão</p>
+        <p class="fig-s">Treinada com profundidade 3 sobre os dados reais (Tarefa 3). Os números nas folhas são as linhas de treino que chegam ali.</p>
+        <div class="rolagem">
+          <svg class="arvore-svg" viewBox="0 0 760 310" role="img" aria-label="Árvore de decisão de profundidade 3: a primeira pergunta é se z_robusto é no máximo 4,75">
+            <g>
+              <path class="ramo" d="M380 48 C380 76 190 70 190 98"/><path class="ramo" d="M380 48 C380 76 570 70 570 98"/>
+              <path class="ramo" d="M190 128 C190 152 95 150 95 174"/><path class="ramo" d="M190 128 C190 152 285 150 285 174"/>
+              <path class="ramo" d="M570 128 C570 152 475 150 475 174"/><path class="ramo" d="M570 128 C570 152 665 150 665 174"/>
+              <path class="ramo" d="M95 204 C95 226 47 228 47 250"/><path class="ramo" d="M95 204 C95 226 142 228 142 250"/>
+              <path class="ramo" d="M285 204 C285 226 237 228 237 250"/><path class="ramo" d="M285 204 C285 226 332 228 332 250"/>
+              <path class="ramo" d="M475 204 C475 226 427 228 427 250"/><path class="ramo" d="M475 204 C475 226 522 228 522 250"/>
+              <path class="ramo" d="M665 204 C665 226 617 228 617 250"/><path class="ramo" d="M665 204 C665 226 712 228 712 250"/>
+              <text class="rot" x="268" y="70" text-anchor="middle">sim</text><text class="rot" x="492" y="70" text-anchor="middle">não</text>
+            </g>
+            <g class="no"><rect x="300" y="18" width="160" height="30" rx="8"/><text x="380" y="38" text-anchor="middle">z_robusto ≤ 4,75?</text></g>
+            <g class="no"><rect x="120" y="98" width="140" height="30" rx="8"/><text x="190" y="118" text-anchor="middle">n5_risco ≤ 3?</text></g>
+            <g class="no"><rect x="480" y="98" width="180" height="30" rx="8"/><text x="570" y="118" text-anchor="middle">jitter_relativo ≤ 3,13?</text></g>
+            <g class="no"><rect x="35" y="174" width="120" height="30" rx="8"/><text x="95" y="194" text-anchor="middle">n5_risco ≤ 1?</text></g>
+            <g class="no"><rect x="225" y="174" width="120" height="30" rx="8"/><text x="285" y="194" text-anchor="middle">n5_risco ≤ 4?</text></g>
+            <g class="no"><rect x="405" y="174" width="140" height="30" rx="8"/><text x="475" y="194" text-anchor="middle">z_robusto ≤ 6,40?</text></g>
+            <g class="no"><rect x="605" y="174" width="120" height="30" rx="8"/><text x="665" y="194" text-anchor="middle">n5_risco ≤ 3?</text></g>
+            <g class="folha ok"><rect x="7" y="250" width="80" height="44" rx="8"/><text x="47" y="269" text-anchor="middle">OK</text><text class="n" x="47" y="285" text-anchor="middle">142.822</text></g>
+            <g class="folha ok"><rect x="102" y="250" width="80" height="44" rx="8"/><text x="142" y="269" text-anchor="middle">OK</text><text class="n" x="142" y="285" text-anchor="middle">29.183</text></g>
+            <g class="folha ok"><rect x="197" y="250" width="80" height="44" rx="8"/><text x="237" y="269" text-anchor="middle">OK</text><text class="n" x="237" y="285" text-anchor="middle">2.175</text></g>
+            <g class="folha risco"><rect x="292" y="250" width="80" height="44" rx="8"/><text x="332" y="269" text-anchor="middle">RISCO</text><text class="n" x="332" y="285" text-anchor="middle">2.879</text></g>
+            <g class="folha falha"><rect x="387" y="250" width="80" height="44" rx="8"/><text x="427" y="269" text-anchor="middle">FALHA</text><text class="n" x="427" y="285" text-anchor="middle">1.181</text></g>
+            <g class="folha falha"><rect x="482" y="250" width="80" height="44" rx="8"/><text x="522" y="269" text-anchor="middle">FALHA</text><text class="n" x="522" y="285" text-anchor="middle">10.623</text></g>
+            <g class="folha ok"><rect x="577" y="250" width="80" height="44" rx="8"/><text x="617" y="269" text-anchor="middle">OK</text><text class="n" x="617" y="285" text-anchor="middle">6.113</text></g>
+            <g class="folha falha"><rect x="672" y="250" width="80" height="44" rx="8"/><text x="712" y="269" text-anchor="middle">FALHA</text><text class="n" x="712" y="285" text-anchor="middle">1.757</text></g>
+          </svg>
+        </div>
+        <figcaption><b>Como ler:</b> comece no topo. "Sim" sempre segue para a esquerda. Se o RTT está até 4,75 desvios acima do normal e houve no máximo 3 sinais de risco recentes, a previsão é OK. Se o desvio passa de 4,75 e o jitter está estável, a previsão é FALHA.</figcaption>
+      </figure>
+      <div class="duas">
+        <div><h4>Como aprende</h4><p>Em cada nó, testa vários cortes em cada variável e fica com o que deixa os dois lados mais "puros", ou seja, com menos mistura de classes.</p></div>
+        <div><h4>Ponto forte</h4><p>Dá para ler cada decisão. A previsão custa poucas comparações, uma por nível.</p></div>
+        <div><h4>Ponto fraco</h4><p>Árvores profundas decoram o treino (overfitting) e mudam muito com pequenas mudanças nos dados.</p></div>
+        <div><h4>Como controlamos</h4><p>Limitando a profundidade (<code>max_depth</code>) e o tamanho mínimo das folhas (<code>min_samples_leaf</code>).</p></div>
+      </div>
+      <details class="formula">
+        <summary>Aprofundamento: Gini, entropia e ganho</summary>
+        <p>Sendo p<sub>i</sub> a fração de linhas da classe i dentro de um nó:</p>
+        <div class="eq">Gini = 1 − Σ p<sub>i</sub>²          Entropia = − Σ p<sub>i</sub> · log₂ p<sub>i</sub></div>
+        <p>Um nó puro tem impureza 0. O ganho de um corte é a impureza do pai menos a média ponderada da impureza dos filhos. No nosso treino, a raiz tem Gini de 0,35, e o corte <code>z_robusto ≤ 4,75</code> reduz a impureza em 0,071, o maior ganho entre todos os cortes testados.</p>
+      </details>
+      <details class="formula">
+        <summary>Estrutura de Dados II: a árvore implementada à mão</summary>
+        <p>Cada nó é um objeto com ponteiros para os filhos. A construção é recursiva (dividir e conquistar) e a previsão desce da raiz até uma folha, em O(profundidade).</p>
+<pre><code><span class="k">class</span> <span class="nn">NoArvore</span>:
+    <span class="k">def</span> <span class="nn">__init__</span>(self, feature=<span class="k">None</span>, limiar=<span class="k">None</span>, esquerda=<span class="k">None</span>, direita=<span class="k">None</span>, *, valor=<span class="k">None</span>):
+        self.feature = feature      <span class="c"># coluna da pergunta</span>
+        self.limiar = limiar        <span class="c"># corte: x[feature] &lt;= limiar</span>
+        self.esquerda = esquerda    <span class="c"># ramo "sim"</span>
+        self.direita = direita      <span class="c"># ramo "não"</span>
+        self.valor = valor          <span class="c"># classe, só nas folhas</span>
+
+<span class="k">def</span> <span class="nn">_prever_linha</span>(self, x, no):
+    <span class="k">if</span> no.valor <span class="k">is not None</span>:          <span class="c"># chegou numa folha</span>
+        <span class="k">return</span> no.valor
+    <span class="k">if</span> x[no.feature] &lt;= no.limiar:
+        <span class="k">return</span> self._prever_linha(x, no.esquerda)
+    <span class="k">return</span> self._prever_linha(x, no.direita)</code></pre>
+        <p>A versão manual testa 19 cortes por variável (os percentis de 5% a 95%). O scikit-learn testa todos os cortes possíveis, por isso as duas árvores ficam parecidas, mas não idênticas. Código completo em <code>notebooks/isaque/Tarefa3_Arvore_inicial.ipynb</code>.</p>
+      </details>
+    </article>
+
+    <article class="modelo">
+      <div class="modelo-h"><i style="background:var(--m-rf)"></i><h3>Random Forest</h3><small>bagging · árvores em paralelo</small></div>
+      <p>Uma floresta de árvores de decisão independentes. Cada árvore treina com um sorteio das linhas de treino, feito com reposição (o <em>bootstrap</em>), e em cada nó só pode escolher entre algumas variáveis sorteadas. Na previsão, todas as árvores votam e vence a classe mais votada.</p>
+      <div class="duas">
+        <div><h4>Por que funciona</h4><p>Uma árvore sozinha se engana com um pico estranho no treino. Cem árvores treinadas com sorteios diferentes erram em lugares diferentes, e o voto cancela boa parte desses erros. Isso reduz a <strong>variância</strong>, o ponto fraco da árvore única.</p></div>
+        <div><h4>Custo</h4><p>Mais memória e previsão mais lenta, porque cada linha passa por todas as árvores. Perde-se a regra única que dá para ler do começo ao fim.</p></div>
+        <div><h4>Por que sortear variáveis</h4><p>Sem esse sorteio, quase toda árvore começaria pelo <code>z_robusto</code>, a variável mais forte, e as árvores sairiam parecidas. Com 8 variáveis, cada nó testa só 2, e as árvores ficam diferentes entre si.</p></div>
+        <div><h4>Avaliação embutida</h4><p>Cada árvore deixa de fora cerca de 37% das linhas no sorteio. Essas linhas "fora da sacola" (<em>out-of-bag</em>) servem para estimar o erro sem tocar na validação.</p></div>
+      </div>
+      <details class="formula">
+        <summary>Aprofundamento: o bootstrap e o voto</summary>
+        <p>Sortear n linhas com reposição de um total de n deixa cada linha de fora com probabilidade (1 − 1/n)ⁿ, que tende a 1/e:</p>
+        <div class="eq">P(linha fora do sorteio) = (1 − 1/n)ⁿ ≈ 1/e ≈ 0,368</div>
+        <p>Na previsão, o scikit-learn faz a média das probabilidades das árvores (a fração de cada classe nas folhas alcançadas) e escolhe a maior. Com árvores sem limite de profundidade, cada folha costuma ter uma classe só, e a média vira, na prática, a contagem de votos.</p>
+      </details>
+    </article>
+  </div>
+
+  <figure class="fig wide">
+    <p class="fig-t">Figura 5. Como a floresta decide</p>
+    <div class="rolagem">
+      <svg viewBox="0 0 760 214" role="img" aria-label="Os dados de treino geram sorteios diferentes; cada sorteio treina uma árvore; as árvores votam e a classe mais votada vence">
+        <defs><marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
+        <g font-family="var(--display)" font-size="12">
+          <text x="24" y="22" fill="var(--muted)" font-size="11.5" font-weight="600">TREINO</text>
+          <text x="186" y="22" fill="var(--muted)" font-size="11.5" font-weight="600">SORTEIO (BOOTSTRAP)</text>
+          <text x="372" y="22" fill="var(--muted)" font-size="11.5" font-weight="600">ÁRVORE (2 DE 8 VARIÁVEIS POR NÓ)</text>
+          <text x="604" y="22" fill="var(--muted)" font-size="11.5" font-weight="600">DECISÃO</text>
+          <rect x="24" y="86" width="118" height="44" rx="8" fill="var(--paper)" stroke="var(--line)"/>
+          <text x="83" y="104" text-anchor="middle" fill="var(--ink)" font-weight="700">196.733 linhas</text><text x="83" y="120" text-anchor="middle" fill="var(--muted)" font-size="11">bloco de treino</text>
+          <g fill="var(--surface)" stroke="var(--line)">
+            <rect x="186" y="38" width="138" height="34" rx="8"/><rect x="186" y="91" width="138" height="34" rx="8"/><rect x="186" y="144" width="138" height="34" rx="8"/>
+          </g>
+          <text x="255" y="59" text-anchor="middle" fill="var(--ink)">sorteio 1</text><text x="255" y="112" text-anchor="middle" fill="var(--ink)">sorteio 2</text><text x="255" y="165" text-anchor="middle" fill="var(--ink)">… sorteio 100</text>
+          <g fill="var(--surface)" stroke="var(--m-rf)" stroke-width="1.5">
+            <rect x="372" y="38" width="160" height="34" rx="8"/><rect x="372" y="91" width="160" height="34" rx="8"/><rect x="372" y="144" width="160" height="34" rx="8"/>
+          </g>
+          <text x="452" y="59" text-anchor="middle" fill="var(--ink)">árvore 1 → <tspan font-weight="700" fill="var(--falha)">FALHA</tspan></text>
+          <text x="452" y="112" text-anchor="middle" fill="var(--ink)">árvore 2 → <tspan font-weight="700" fill="var(--falha)">FALHA</tspan></text>
+          <text x="452" y="165" text-anchor="middle" fill="var(--ink)">árvore 100 → <tspan font-weight="700" fill="var(--ok)">OK</tspan></text>
+          <rect x="604" y="80" width="132" height="56" rx="8" fill="var(--paper)" stroke="var(--m-rf)" stroke-width="1.5"/>
+          <text x="670" y="102" text-anchor="middle" fill="var(--ink)" font-weight="700">voto da maioria</text>
+          <text x="670" y="122" text-anchor="middle" fill="var(--muted)" font-size="11">classe mais votada</text>
+          <g stroke="var(--muted)" fill="none" stroke-width="1.2" marker-end="url(#seta)">
+            <path d="M142 100 L184 58"/><path d="M142 108 L184 108"/><path d="M142 116 L184 158"/>
+            <path d="M324 55 H370"/><path d="M324 108 H370"/><path d="M324 161 H370"/>
+            <path d="M532 58 L602 96"/><path d="M532 108 H602"/><path d="M532 158 L602 120"/>
+          </g>
+          <text x="24" y="204" fill="var(--muted)" font-size="11.5">Cada sorteio deixa ~37% das linhas de fora e cada nó testa 2 de 8 variáveis: as árvores saem diferentes.</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption><b>Como ler:</b> da esquerda para a direita. As árvores não conversam entre si durante o treino; elas só se juntam no voto final. O exemplo de votos é ilustrativo.</figcaption>
+  </figure>
+
+  <h3>Árvore única ou floresta?</h3>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Critério</th><th>Árvore de Decisão</th><th>Random Forest</th></tr></thead>
+      <tbody>
+        <tr><td>Como aprende</td><td>Uma árvore, cortes por pureza</td><td>Muitas árvores em paralelo, com sorteio de linhas e de variáveis</td></tr>
+        <tr><td>Como decide</td><td>Segue um caminho até uma folha</td><td>Voto da maioria das árvores</td></tr>
+        <tr><td>Ponto fraco que ataca</td><td>Nenhum sozinha: depende da poda</td><td>Variância (instabilidade da árvore única)</td></tr>
+        <tr><td>Leitura das decisões</td><td>Alta: regras se-então</td><td>Média: importância das variáveis e fração de votos</td></tr>
+        <tr><td>Custo</td><td>Leve e rápida</td><td>Mais memória e previsão mais lenta</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="secao" id="resultados">
+  <h2><span class="num">6</span>Resultados e comparação</h2>
+  <p>Comparamos os dois modelos do projeto, exatamente com os mesmos dados, as mesmas 8 variáveis e a mesma divisão temporal:</p>
+  <ul>
+    <li><strong>Árvore de Decisão (Tarefa 4):</strong> a melhor de 80 combinações testadas na validação. Critério entropia, profundidade 8 e no mínimo 5 linhas por folha.</li>
+    <li><strong>Random Forest (entrega de 04/11):</strong> o arquivo <code>random_forest_tarefa5.joblib</code>, com 100 árvores, avaliado como foi entregue.</li>
+  </ul>
+  <p>O RFC do projeto pede ainda uma <strong>referência de persistência</strong>: prever que, daqui a 12 minutos, a rede estará no mesmo estado de agora. Um preditor só merece esse nome se fizer melhor que isso. Todas as notas abaixo são do bloco de teste (117.945 linhas, de 31/10 a 02/11/2026), medido uma única vez.</p>
+
+  <figure class="fig wide" id="fig-metricas">
+    <p class="fig-t">Figura 6. A floresta fica à frente da árvore em todas as classes raras</p>
+    <p class="fig-s">F1 macro (de 0 a 1) e recall de cada classe (0 = 0%, 1 = 100%) no conjunto de teste.</p>
+    <div class="chart" id="chart-metricas"></div>
+    <figcaption><b>Como ler:</b> recall é a fração dos casos reais de cada classe que o modelo encontrou. Os dois modelos acham quase todo OK, cerca de metade das FALHAs e menos de 10% dos RISCOs. A floresta encontra um pouco mais de FALHA e de RISCO. A barra tracejada é a persistência: ela acha mais FALHA e RISCO, mas erra muito mais OK, e termina com F1 macro igual.</figcaption>
+  </figure>
+
+  <div class="tabela-wrap wide">
+    <table>
+      <thead><tr><th>Modelo</th><th class="n">F1 macro</th><th class="n">Acurácia balanceada</th><th class="n">Recall FALHA</th><th class="n">Precisão FALHA</th><th class="n">Recall RISCO</th><th class="n">1 previsão</th><th class="n">Arquivo</th></tr></thead>
+      <tbody>
+        <tr class="destaque"><td>Random Forest (entregue)</td><td class="n">0,584</td><td class="n">53,8%</td><td class="n">53,6%</td><td class="n">86,7%</td><td class="n">9,4%</td><td class="n">24 ms</td><td class="n">462 MB</td></tr>
+        <tr><td>Árvore de Decisão (Tarefa 4)</td><td class="n">0,581</td><td class="n">53,3%</td><td class="n">52,4%</td><td class="n">88,9%</td><td class="n">8,6%</td><td class="n">0,4 ms</td><td class="n">0,04 MB</td></tr>
+        <tr><td>Persistência (referência)</td><td class="n">0,583</td><td class="n">58,3%</td><td class="n">61,6%</td><td class="n">61,6%</td><td class="n">23,1%</td><td class="n">—</td><td class="n">—</td></tr>
+        <tr><td>Sempre "OK"</td><td class="n">0,302</td><td class="n">33,3%</td><td class="n">0%</td><td class="n">—</td><td class="n">0%</td><td class="n">—</td><td class="n">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Análise de cada modelo</h3>
+  <ul>
+    <li><strong>Random Forest.</strong> Melhor F1 macro do projeto no teste (0,584). Encontrou mais FALHAs (6.326 contra 6.178 da árvore) e mais RISCOs (775 contra 705). Em troca, dispara um pouco mais de alarmes falsos: 760 linhas OK viraram FALHA, contra 574 na árvore.</li>
+    <li><strong>Árvore de Decisão.</strong> Ficou muito perto (0,581), e na validação até foi um pouco melhor (0,616 contra 0,610). É 55 vezes mais rápida por previsão, ocupa 11 mil vezes menos espaço e é a única cujas regras dá para ler inteiras.</li>
+    <li><strong>Persistência.</strong> Empata com os dois em F1 macro. Ela acerta todas as linhas em que o estado se mantém e erra todas em que ele muda (Figura 8), por isso acha mais FALHA e RISCO, mas também gera muito mais alarme falso.</li>
+  </ul>
+  <div class="nota alerta"><b>Diferenças pequenas.</b> Reamostrando os 157 fluxos 300 vezes, a floresta supera a árvore em 76% das reamostragens (ganho médio de 0,003 em F1 macro) e supera a persistência em 47%. A vantagem sobre a árvore aparece, mas não é garantida, e contra a persistência há empate técnico.</div>
+
+  <figure class="fig wide" id="fig-matrizes">
+    <p class="fig-t">Figura 7. Onde cada modelo acerta e erra</p>
+    <p class="fig-s">Matrizes de confusão no teste. Cada linha é a classe real e soma 100%.</p>
+    <div class="matrizes" id="matrizes"></div>
+    <figcaption><b>Como ler:</b> a diagonal mostra os acertos. O erro mais caro, segundo o RFC, é a FALHA real prevista como OK: 44% das FALHAs na floresta e 46% na árvore. O alarme falso é raro nos modelos (menos de 1% dos OK viram FALHA) e bem mais comum na persistência (4%).</figcaption>
+  </figure>
+
+  <figure class="fig wide" id="fig-transicao">
+    <p class="fig-t">Figura 8. Os modelos acertam a continuidade, e não a mudança</p>
+    <p class="fig-s">Taxa de acerto no teste, separando as linhas em que o estado de agora se mantém daqui a 12 minutos e as linhas em que ele muda.</p>
+    <div class="chart" id="chart-transicao"></div>
+    <figcaption><b>Como ler:</b> quando a rede mantém o estado (83% do teste), os modelos acertam cerca de 97%. Quando o estado muda (17%), acertam 42% a 43%. Dos 4.010 casos que estavam OK e viraram FALHA em 12 minutos, a floresta antecipou 18 e a árvore, 2.</figcaption>
+  </figure>
+
+  <h3>Fluxos que o modelo nunca viu (Protocolo B)</h3>
+  <p>O RFC pede também um teste com fluxos inteiros fora do treino, o caso de um caminho novo entrando no monitoramento. Dividimos os 157 fluxos em 5 grupos; cada grupo foi avaliado com modelos treinados só nos outros 4, sempre no bloco de teste.</p>
+  <div class="tabela-wrap wide">
+    <table>
+      <thead><tr><th>Modelo</th><th class="n">F1 macro, fluxos conhecidos</th><th class="n">F1 macro, fluxos novos</th><th class="n">Recall FALHA, fluxos novos</th></tr></thead>
+      <tbody>
+        <tr><td>Random Forest (configuração entregue)</td><td class="n">0,584</td><td class="n">0,558</td><td class="n">48,9%</td></tr>
+        <tr><td>Árvore de Decisão (Tarefa 4)</td><td class="n">0,581</td><td class="n">0,572</td><td class="n">50,8%</td></tr>
+        <tr><td>Persistência (referência)</td><td class="n">0,583</td><td class="n">0,583</td><td class="n">61,6%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Em fluxos novos, a floresta perde mais que a árvore: suas árvores sem limite aprendem detalhes de cada fluxo do treino, que não se repetem num fluxo desconhecido. O critério 4 do RFC fica dividido. Caminhos longos e estáveis (Brasil → Japão, Índia e África do Sul) não viram FALHA: 98,9% das linhas OK foram previstas como OK e só 0,4% como FALHA. Já nos caminhos curtos, 90% das FALHAs foram previstas como OK, mas 77% delas estavam OK no momento da previsão: é de novo a falha que ainda não começou.</p>
+
+  <figure class="fig wide" id="fig-importancia">
+    <p class="fig-t">Figura 9. Os dois modelos dependem do desvio robusto</p>
+    <p class="fig-s">Quanto o F1 macro cai quando os valores de cada variável são embaralhados (importância por permutação, 40 mil linhas de teste).</p>
+    <div class="chart" id="chart-importancia"></div>
+    <figcaption><b>Como ler:</b> quanto maior a barra, mais o modelo depende da variável. Embaralhar <code>z_robusto</code> derruba o F1 em 0,22 nos dois modelos. A floresta usa muito mais o <code>aumento_pct</code> (0,075 contra 0,013). Perda de pacotes e timeouts quase não pesam, porque são raros neste conjunto.</figcaption>
+  </figure>
+</section>
+
+<!-- 7 -->
+<section class="secao" id="destaque">
+  <h2><span class="num">7</span>Destaque: Random Forest, o modelo entregue</h2>
+  <div class="campeao">
+    <span class="selo">Melhor F1 macro do projeto no teste</span>
+    <h3>Random Forest</h3>
+    <p>O modelo entregue em 04/11 tem 100 árvores de decisão que votam juntas. No teste, superou a árvore única no F1 macro e em todas as classes raras.</p>
+    <div class="campeao-nums">
+      <div><b>0,584</b><span>F1 macro (árvore: 0,581)</span></div>
+      <div><b>53,6%</b><span>recall de FALHA (árvore: 52,4%)</span></div>
+      <div><b>9,4%</b><span>recall de RISCO (árvore: 8,6%)</span></div>
+      <div><b>93%</b><span>de acerto quando mais de 90% das árvores concordam</span></div>
+    </div>
+  </div>
+
+  <h3>Por que ele superou a árvore única</h3>
+  <ul>
+    <li><strong>O voto corrige o excesso de cada árvore.</strong> Cada uma das 100 árvores cresce até decorar a sua amostra: juntas, acertam 99,98% das linhas do próprio treino. Sozinha, uma árvore assim generalizaria mal. Como cada uma viu um sorteio diferente, os erros de uma não são os erros das outras, e o voto fica com o que se repete.</li>
+    <li><strong>Ele combina mais variáveis.</strong> A árvore única, limitada a 8 níveis, decide quase só pelo <code>z_robusto</code> e pelo <code>n5_risco</code>. A floresta também usa o <code>aumento_pct</code> (Figura 9). Em um fluxo muito estável, subir 0,4 ms já dá um z alto, mas é um aumento de 1%. Olhar as duas medidas juntas separa melhor o desvio que importa do ruído.</li>
+    <li><strong>Encontra mais casos raros.</strong> 148 FALHAs e 70 RISCOs a mais que a árvore no teste, que são exatamente as classes que o F1 macro valoriza.</li>
+  </ul>
+  <p>A vantagem é pequena. Na validação, a árvore ficou um pouco à frente (0,616 contra 0,610), e no teste a floresta vence em 76% das reamostragens. A floresta ganha no teste e nas classes raras; a árvore ganha em leveza e em leitura.</p>
+
+  <h3>Como ele funciona, em linguagem simples</h3>
+  <ol>
+    <li>Sorteia, com reposição, 196.733 linhas do bloco de treino. Algumas se repetem e cerca de 37% ficam de fora.</li>
+    <li>Treina uma árvore com esse sorteio. Em cada nó, ela só pode escolher entre 2 das 8 variáveis, sorteadas na hora, e cresce até cada folha ter uma classe só. Em média, cada árvore chegou a 69 níveis e 26 mil folhas.</li>
+    <li>Repete os passos 1 e 2 até ter 100 árvores diferentes.</li>
+    <li>Para prever, a medição passa pelas 100 árvores, e cada uma vota em OK, RISCO ou FALHA.</li>
+    <li>Vence a classe mais votada. A fração de votos funciona como confiança: em 54% das previsões, mais de 90% das árvores concordam, e nesses casos o modelo acerta 93%. Quando o voto fica dividido (até 60%), o acerto cai para 59%.</li>
+  </ol>
+
+  <h3>Hiperparâmetros usados e o efeito de cada um</h3>
+  <p>O modelo entregue usa os valores padrão do scikit-learn. Para medir o efeito de cada um, treinamos de novo mudando um hiperparâmetro por vez e mantendo os outros como na entrega. A nota é o F1 macro na validação; a configuração entregue tem 0,610.</p>
+  <div class="tabela-wrap wide">
+    <table>
+      <thead><tr><th>Hiperparâmetro</th><th>Valor entregue</th><th>O que faz</th><th>Efeito medido (F1 macro na validação)</th></tr></thead>
+      <tbody>
+        <tr><td><code>n_estimators</code></td><td class="n">100</td><td>Número de árvores que votam.</td><td>10 árvores: 0,603 · 50: 0,611 · 100: 0,611 · 200: 0,612. Acima de 50 o ganho é mínimo, e o arquivo dobra a cada dobro de árvores (200 árvores: 923 MB).</td></tr>
+        <tr><td><code>max_depth</code></td><td class="n">sem limite</td><td>Quantos níveis cada árvore pode ter.</td><td>4 níveis: 0,596 · 8: 0,611 · 16: <strong>0,618</strong> · 24: 0,616 · sem limite: 0,611. Limitar a 16 foi o melhor e deixa o arquivo com 51 MB, em vez de 462 MB.</td></tr>
+        <tr><td><code>min_samples_leaf</code></td><td class="n">1</td><td>Mínimo de linhas em cada folha.</td><td>1: 0,611 · 5: 0,617 · 20: 0,614 · 50: 0,611. Folhas um pouco maiores evitam decorar casos isolados.</td></tr>
+        <tr><td><code>max_features</code></td><td class="n">"sqrt" (2 de 8)</td><td>Quantas variáveis cada nó pode sortear.</td><td>1: 0,613 · 2: 0,611 · 4: 0,612 · todas as 8: 0,609, e o treino demora 3 vezes mais. Sortear poucas variáveis mantém as árvores diferentes entre si.</td></tr>
+        <tr><td><code>class_weight</code></td><td class="n">nenhum</td><td>Peso extra para as classes raras.</td><td>Sem peso: 0,611 · <code>"balanced_subsample"</code>: 0,613. Efeito pequeno.</td></tr>
+        <tr><td><code>bootstrap</code> e <code>criterion</code></td><td class="n">sim · gini</td><td>Sorteio com reposição e medida de pureza.</td><td>São a base do método; mantidos como na entrega.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Retreinada aqui, a configuração entregue marca 0,611 na validação, contra 0,610 do arquivo entregue. A diferença vem da versão do scikit-learn: as previsões das duas coincidem em 99,7% do teste.</p>
+
+  <h3>Onde ele ainda erra</h3>
+  <ul>
+    <li><strong>A falha que está começando.</strong> Das 5.237 FALHAs que a floresta previu como OK, 3.967 (76%) estavam OK no momento da previsão. Ela reconhece bem a falha que continua (acerta 87% delas), mas antecipou só 18 das 4.010 que começaram.</li>
+    <li><strong>RISCO.</strong> Encontra só 9,4% dos RISCOs. É a classe mais rara, fica entre as outras duas e é definida por sinais fracos combinados.</li>
+    <li><strong>Tamanho e velocidade.</strong> As árvores sem limite deixam o arquivo com 462 MB, tanto que ele teve de ir para o Google Drive. Cada previsão de uma linha leva 24 ms, contra 0,4 ms da árvore única.</li>
+    <li><strong>Empate com a persistência.</strong> Repetir o estado atual dá F1 macro de 0,583, praticamente o mesmo 0,584 da floresta. Pelo critério 3 do RFC, enquanto o modelo não superar essa referência, o sistema deve ser apresentado como um <strong>detector</strong> de degradação em andamento, e não como um preditor do início da falha.</li>
+  </ul>
+</section>
+
+<!-- 8 -->
+<section class="secao" id="api">
+  <h2><span class="num">8</span>Como usar a API</h2>
+  <p>O projeto usa duas interfaces. A primeira é a <strong>API REST pública do RIPE Atlas</strong>, de onde vêm todos os dados. A segunda é o <strong>contrato de entrada e saída do modelo</strong>: que variáveis entram, em que ordem, e o que sai. Não mantemos um servidor próprio no ar; o modelo treinado é um arquivo que outro sistema carrega e consulta.</p>
+
+  <h3>A. API do RIPE Atlas</h3>
+  <p>O endereço base é <code>https://atlas.ripe.net/api/v2</code>. Todas as chamadas são <code>GET</code>, públicas e sem chave.</p>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Endpoint</th><th>Para que usamos</th></tr></thead>
+      <tbody>
+        <tr><td><span class="metodo">GET</span><code>/anchors/?country=BR</code></td><td>Listar os anchors ativos de um país (IP, sonda, ASN).</td></tr>
+        <tr><td><span class="metodo">GET</span><code>/measurements/?type=ping&amp;target=…</code></td><td>Achar o ID da medição de ping do mesh que tem aquele anchor como alvo.</td></tr>
+        <tr><td><span class="metodo">GET</span><code>/measurements/{id}/results/</code></td><td>Baixar os resultados de um intervalo de tempo (<code>start</code>, <code>stop</code>, <code>probe_ids</code>).</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pre-h"><span>Requisição real</span><button class="copiar" data-alvo="req-ripe">Copiar</button></div>
+<pre id="req-ripe"><code>GET https://atlas.ripe.net/api/v2/measurements/66196984/results/?start=1794187789&amp;stop=1794188029&amp;format=json</code></pre>
+  <p>Essa chamada pede 4 minutos da medição de ping do mesh para um anchor no Brasil. Ela foi feita em 09/11/2026 (UTC) e devolveu 1.048 resultados, um por sonda de origem. Abaixo, dois deles: um saudável e um sem resposta.</p>
+
+  <div data-abas>
+    <div class="abas" role="tablist" aria-label="Exemplos de resposta">
+      <button class="aba" role="tab" id="aba-ok" aria-controls="resp-ok" aria-selected="true">Com resposta</button>
+      <button class="aba" role="tab" id="aba-falha" aria-controls="resp-falha" aria-selected="false">Sem resposta</button>
+    </div>
+    <div id="resp-ok" role="tabpanel" aria-labelledby="aba-ok">
 <pre><code>{
-  "z_robusto": 1.23,
-  "aumento_pct": 0.75,
-  "jitter_relativo": 3.47,
-  "perda_pacotes": 0.0,
-  "timeout_atual": 0,
-  "n5_timeout": 0,
-  "n5_aumento80": 0,
-  "n5_risco": 2
+  <span class="s">"msm_id"</span>: 66196984,  <span class="s">"type"</span>: <span class="s">"ping"</span>,  <span class="s">"proto"</span>: <span class="s">"ICMP"</span>,
+  <span class="s">"prb_id"</span>: 6313,                  <span class="c">// sonda de origem</span>
+  <span class="s">"dst_addr"</span>: <span class="s">"138.117.32.11"</span>,      <span class="c">// anchor de destino</span>
+  <span class="s">"timestamp"</span>: 1794187789,         <span class="c">// 09/11/2026 01:29:49 UTC</span>
+  <span class="s">"sent"</span>: 3,  <span class="s">"rcvd"</span>: 3,
+  <span class="s">"min"</span>: 216.088257,  <span class="s">"avg"</span>: 216.196174,  <span class="s">"max"</span>: 216.368754,
+  <span class="s">"result"</span>: [ {<span class="s">"rtt"</span>: 216.131511}, {<span class="s">"rtt"</span>: 216.088257}, {<span class="s">"rtt"</span>: 216.368754} ],
+  <span class="s">"step"</span>: 240,  <span class="s">"ttl"</span>: 57,  <span class="s">"size"</span>: 64
 }</code></pre>
-                
-                <button class="btn" id="btn-api" style="margin-top: 10px;" onclick="simularAPI()">Consultar o Futuro (T+12 min) 🚀</button>
-                
-                <div id="api-response" style="display: none; margin-top: 20px;">
-                    <h3>Resposta do Servidor (Predição):</h3>
+    </div>
+    <div id="resp-falha" role="tabpanel" aria-labelledby="aba-falha" hidden>
 <pre><code>{
-  "estado_futuro_previsto": "RISCO",
-  "mensagem": "Alerta: O jitter relativo e o acúmulo de instabilidade (n5_risco) indicam degradação iminente nos próximos 12 minutos."
+  <span class="s">"msm_id"</span>: 86012542,  <span class="s">"type"</span>: <span class="s">"ping"</span>,  <span class="s">"proto"</span>: <span class="s">"ICMP"</span>,
+  <span class="s">"prb_id"</span>: 6251,
+  <span class="s">"dst_addr"</span>: <span class="s">"170.81.100.114"</span>,
+  <span class="s">"timestamp"</span>: 1794188008,
+  <span class="s">"sent"</span>: 3,  <span class="s">"rcvd"</span>: 0,          <span class="c">// nenhum pacote voltou</span>
+  <span class="s">"min"</span>: -1,  <span class="s">"avg"</span>: -1,  <span class="s">"max"</span>: -1,  <span class="c">// -1 = sem medida, nunca latência</span>
+  <span class="s">"result"</span>: [ {<span class="s">"x"</span>: <span class="s">"*"</span>}, {<span class="s">"x"</span>: <span class="s">"*"</span>}, {<span class="s">"x"</span>: <span class="s">"*"</span>} ],
+  <span class="s">"step"</span>: 240,  <span class="s">"size"</span>: 64
 }</code></pre>
-                </div>
-            </div>
-        </section>
-        
-        <!-- PRÓXIMOS PASSOS -->
-        <section id="limitacoes" class="reveal">
-            <h2><i class="fa-solid fa-rocket"></i> Próximos Passos</h2>
-            <p>O futuro da infraestrutura global é autônomo. O próximo passo deste projeto é integrar as respostas da nossa API diretamente a controladores <strong>SDN (Redes Definidas por Software)</strong>. Dessa forma, no milissegundo em que a API prever uma FALHA na rota principal, o roteador trocará automaticamente o tráfego para uma rota de backup, sem que nenhum usuário sinta o vídeo travar.</p>
-        </section>
+    </div>
+  </div>
 
-    </main>
+  <p>O coletor transforma cada resultado em uma linha do CSV:</p>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Campo da linha</th><th>Com resposta</th><th>Sem resposta</th></tr></thead>
+      <tbody>
+        <tr><td><code>fluxo_id</code></td><td><code>6313|138.117.32.11</code></td><td><code>6251|170.81.100.114</code></td></tr>
+        <tr><td><code>latencia_ms</code> (= <code>avg</code>)</td><td class="n">216,196</td><td>vazio</td></tr>
+        <tr><td><code>perda_pct</code></td><td class="n">0,0</td><td class="n">100,0</td></tr>
+        <tr><td><code>jitter_ms</code> (desvio-padrão dos <code>rtt</code>)</td><td class="n">0,151</td><td>vazio</td></tr>
+        <tr><td><code>timeout_atual</code></td><td class="n">0</td><td class="n">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>O anchor <code>170.81.100.114</code> do segundo exemplo é o mesmo que o RFC cita como excluído por não ter RTT válido no Período A: ele seguia sem responder.</p>
 
-    <!-- FOOTER -->
-    <footer>
-        <h2 style="color: var(--text-main); margin-bottom: 10px;">Projeto Interdisciplinar | Estruturas de Dados II & Redes</h2>
-        <p style="color: var(--primary); font-weight: 600; font-size: 1.1rem;">Grupo 3 — 4º Semestre / Ciência da Computação (Manhã)</p>
-        <p style="margin-top: 10px;">Isaque Valim • Gabriel Pereira • Gabriel Schmidt • Eduardo Silva • Ryan de Paula</p>
-        <br><br>
-        <p><a href="https://github.com/Yuoneeh/Projeto_Redes_EstDados/tree/main" target="_blank">
-            <i class="fa-brands fa-github fa-2xl" style="margin-bottom: 15px; color: var(--text-main);"></i><br>
-            Acessar o Repositório Oficial no GitHub
-        </a></p>
-    </footer>
+  <h3>B. Consultar o Random Forest entregue</h3>
+  <p>O modelo recebe as 8 variáveis relativas, sempre nesta ordem, e devolve a classe prevista para daqui a 12 minutos. Para calcular as variáveis, o sistema precisa da ficha do fluxo (Período A) e das 5 últimas medições dele. O contrato completo está em <code>Entrega_04_11/RandomForest/metadados.json</code>.</p>
+  <div class="pre-h"><span>Python</span><button class="copiar" data-alvo="cod-modelo">Copiar</button></div>
+<pre id="cod-modelo"><code><span class="k">import</span> joblib, pandas <span class="k">as</span> pd
 
-    <!-- SCRIPTS MÁGICOS -->
-    <script>
-        // Efeito Máquina de Escrever no Banner
-        const text = "14 dias de dados. 5 Continentes. Previsão de falhas com 12 minutos de antecedência.";
-        let i = 0;
-        const speed = 45;
+FEATURES = [<span class="s">"z_robusto"</span>, <span class="s">"aumento_pct"</span>, <span class="s">"jitter_relativo"</span>, <span class="s">"perda_pacotes"</span>,
+            <span class="s">"timeout_atual"</span>, <span class="s">"n5_timeout"</span>, <span class="s">"n5_aumento80"</span>, <span class="s">"n5_risco"</span>]
 
-        function typeWriter() {
-            if (i < text.length) {
-                document.getElementById("typewriter").innerHTML += text.charAt(i);
-                i++;
-                setTimeout(typeWriter, speed);
-            }
+modelo = joblib.load(<span class="s">"Entrega_04_11/RandomForest/random_forest_tarefa5.joblib"</span>)
+
+entrada = pd.DataFrame([{
+    <span class="s">"z_robusto"</span>: 6.9977, <span class="s">"aumento_pct"</span>: 6.6832, <span class="s">"jitter_relativo"</span>: 1.4408,
+    <span class="s">"perda_pacotes"</span>: 0.0, <span class="s">"timeout_atual"</span>: 0,
+    <span class="s">"n5_timeout"</span>: 0, <span class="s">"n5_aumento80"</span>: 0, <span class="s">"n5_risco"</span>: 0,
+}])[FEATURES]
+
+votos = modelo.predict_proba(entrada)[0]      <span class="c"># fração das 100 árvores em cada classe</span>
+print({<span class="s">"previsao_12min"</span>: modelo.predict(entrada)[0],
+       <span class="s">"votos"</span>: dict(zip(modelo.classes_, votos.round(2)))})   <span class="c"># classes_ = FALHA, OK, RISCO</span></code></pre>
+  <div class="pre-h"><span>Resposta</span></div>
+<pre><code>{<span class="s">"previsao_12min"</span>: <span class="s">"FALHA"</span>, <span class="s">"votos"</span>: {<span class="s">"FALHA"</span>: 0.96, <span class="s">"OK"</span>: 0.04, <span class="s">"RISCO"</span>: 0.0}}</code></pre>
+  <p>A entrada acima é uma linha real do teste: o fluxo <code>6953|107.162.219.5</code> (Índia → Singapura) em 01/11/2026, às 02:27 UTC. O RTT estava em 74,9 ms, contra um normal de 70,2 ms: só 6,7% acima, mas 7 desvios típicos acima, porque esse caminho costuma ser muito estável. 96 das 100 árvores votaram FALHA, e a classe real 12 minutos depois foi FALHA.</p>
+  <p>Para comparar, o fluxo <code>6602|104.238.161.230</code> (Brasil → Japão) estava em 297,8 ms, quatro vezes mais lento, mas com z de 0,73 em relação ao seu normal de 282 ms. 93 árvores votaram OK, e a rede de fato continuou OK. É a ideia central do projeto: distância não é defeito.</p>
+  <p>Atenção à ordem das classes: o modelo guarda <code>classes_</code> em ordem alfabética (FALHA, OK, RISCO), então os votos devem ser lidos por nome, nunca por posição.</p>
+</section>
+
+<!-- 9 -->
+<section class="secao" id="limitacoes">
+  <h2><span class="num">9</span>Limitações e próximos passos</h2>
+  <h3>Limitações</h3>
+  <ul>
+    <li><strong>Hoje, um detector.</strong> O modelo reconhece uma degradação em andamento, mas quase nunca antecipa a passagem de OK para FALHA (Figura 8), e não supera a persistência. Pelo critério 3 do RFC, é assim que o sistema deve ser apresentado.</li>
+    <li><strong>Rompimento físico.</strong> Um cabo cortado sem nenhum sinal prévio na latência não pode ser previsto por nenhum modelo baseado nesses sinais.</li>
+    <li><strong>O rótulo é sensível em caminhos muito estáveis.</strong> Como 95% das FALHAs vêm do <code>z_robusto</code>, um aumento de poucos milissegundos já conta como FALHA num fluxo de variação baixíssima.</li>
+    <li><strong>A ficha do normal é fixa.</strong> Se o caminho muda de rota entre o Período A e o B, o fluxo inteiro parece anômalo. Três fluxos ficaram com mais de 96% das linhas em FALHA. O RFC prevê uma classe RECALIBRAR para esse caso, ainda não implementada.</li>
+    <li><strong>Modelo pesado.</strong> 462 MB e 24 ms por previsão, por causa das árvores sem limite de profundidade.</li>
+    <li><strong>Pouco tempo.</strong> Uma semana de teste não cobre padrões entre semanas nem eventos raros.</li>
+  </ul>
+  <h3>Próximos passos</h3>
+  <ul>
+    <li>Limitar a profundidade das árvores a 16: na validação, o F1 macro subiu de 0,611 para 0,618 e o arquivo caiu de 462 MB para 51 MB. A troca do modelo entregue ainda precisa ser confirmada no teste e em fluxos novos.</li>
+    <li>Implementar a classe RECALIBRAR do RFC, abrindo uma nova ficha quando o fluxo muda de patamar e fica estável.</li>
+    <li>Exigir um aumento mínimo em milissegundos, além do z, para chamar de FALHA.</li>
+    <li>Criar variáveis de tendência (a inclinação da latência nas últimas medições) e testar horizontes menores que 12 minutos, buscando antecipar o começo da falha.</li>
+    <li>Usar a fração de votos da floresta como nível de alerta: agir na hora quando mais de 90% das árvores apontam FALHA e só observar quando o voto está dividido.</li>
+    <li>Integrar a previsão a um controlador SDN (rede definida por software), para que uma FALHA prevista dispare a troca automática para uma rota de reserva.</li>
+  </ul>
+</section>
+
+<!-- 10 -->
+<section class="secao" id="conclusao">
+  <h2><span class="num">10</span>Conclusão</h2>
+  <p>Construímos um pipeline completo e auditável: coleta pela API do RIPE Atlas, normal aprendido por fluxo, variáveis relativas, rótulo de 12 minutos à frente e divisão temporal sem vazamento. Sobre essa base, a árvore de decisão (implementada à mão e no scikit-learn) e a Random Forest foram avaliadas nas mesmas condições.</p>
+  <p>A Random Forest entregue teve o melhor resultado do projeto no teste (F1 macro de 0,584) e encontrou mais FALHAs e RISCOs que a árvore única. Os dois modelos, porém, ficaram empatados com uma regra que repete o estado atual: eles reconhecem a falha que já começou, não a que vai começar. O limite hoje não está no algoritmo, e sim no que as variáveis atuais permitem antecipar com 12 minutos de antecedência. Os próximos passos atacam exatamente esse ponto.</p>
+</section>
+
+<!-- Links -->
+<section class="secao" id="links">
+  <h2>Links e repositório</h2>
+  <div class="links">
+    <ul>
+      <li><b>Repositório do projeto</b><a href="https://github.com/Yuoneeh/Projeto_Redes_EstDados" target="_blank" rel="noopener">github.com/Yuoneeh/Projeto_Redes_EstDados</a></li>
+      <li><b>Repositório do artigo</b><a href="https://github.com/Yuoneeh/Artigo_Preditor_de_redes" target="_blank" rel="noopener">github.com/Yuoneeh/Artigo_Preditor_de_redes</a></li>
+      <li><b>Vídeo pitch (90 s)</b><a href="https://youtu.be/h0cTuHPZZOc" target="_blank" rel="noopener">youtu.be/h0cTuHPZZOc</a></li>
+      <li><b>Modelo Random Forest entregue em 04/11</b><a href="https://drive.google.com/file/d/1uBp4ld-l_ujSkFI9Oqy8PaOayE7_HYCT/view?usp=sharing" target="_blank" rel="noopener">Google Drive</a></li>
+    </ul>
+    <img class="qr" src="img/qrcode_artigo.png" alt="QR Code que leva ao artigo" width="150" height="174">
+  </div>
+</section>
+
+<!-- Autores -->
+<section class="secao" id="autores">
+  <h2>Autores</h2>
+  <p>Grupo 3 · 4º semestre de Ciência da Computação (manhã), Centro Universitário Braz Cubas. Os cinco autores autorizaram a publicação de nome e imagem para avaliação acadêmica (LGPD).</p>
+  <div class="autores">
+    <div class="autor"><img src="img/isaque.jpg" alt="Foto de Isaque Rodrigues Valim" width="64" height="64"><b>Isaque Rodrigues Valim</b><span>Desenvolvimento backend (Java, Spring Boot, Python).</span></div>
+    <div class="autor"><img src="img/eduardo.jpg" alt="Foto de Eduardo Felipe Braga Silva" width="64" height="64"><b>Eduardo Felipe Braga Silva</b><span>Desenvolvimento de jogos e software.</span></div>
+    <div class="autor"><img src="img/ryan.jpg" alt="Foto de Ryan Catão de Paula" width="64" height="64"><b>Ryan Catão de Paula</b><span>Software, redes de computadores e análise de dados.</span></div>
+    <div class="autor"><img src="img/gabriel-pereira.jpg" alt="Foto de Gabriel José Couto Pereira" width="64" height="64"><b>Gabriel José Couto Pereira</b><span>Software e análise de dados (Python e SQL).</span></div>
+    <div class="autor"><img src="img/gabriel-schmidt.jpg" alt="Foto de Gabriel Schmidt" width="64" height="64"><b>Gabriel Schmidt</b><span>Full-stack, redes, servidores Linux e Docker.</span></div>
+  </div>
+</section>
+
+<!-- Referências -->
+<section class="secao" id="referencias">
+  <h2>Referências</h2>
+  <ul>
+    <li>BREIMAN, Leo. Random Forests. <em>Machine Learning</em>, v. 45, n. 1, p. 5–32, 2001.</li>
+    <li>RIPE NCC. <a href="https://atlas.ripe.net/docs/apis/rest-api-reference/" target="_blank" rel="noopener">RIPE Atlas REST API Reference</a>.</li>
+    <li>SCIKIT-LEARN. <a href="https://scikit-learn.org/stable/modules/tree.html" target="_blank" rel="noopener">Decision Trees</a> e <a href="https://scikit-learn.org/stable/modules/ensemble.html" target="_blank" rel="noopener">Ensemble methods</a>. Documentação oficial.</li>
+    <li>ONO, Andrea. <a href="https://github.com/andreaono/preditor_redes" target="_blank" rel="noopener">Repositório de referência: Preditor de Redes</a>. GitHub, 2026.</li>
+  </ul>
+  <p style="font-size:.9rem;color:var(--muted)">Texto sob licença CC BY 4.0 e código sob licença MIT. Números calculados a partir de <code>Entrega_04_11/Dataset_usado</code>, com semente 42.</p>
+</section>
+
+</main>
+
+<footer class="rodape gutter">
+  <div class="in">
+    <span>Projeto Interdisciplinar · Estrutura de Dados II, Redes de Computadores e Análise e Projeto de Sistemas</span>
+    <span>Grupo 3 · <a href="https://github.com/Yuoneeh/Projeto_Redes_EstDados" target="_blank" rel="noopener">Repositório no GitHub</a></span>
+  </div>
+</footer>
+
+<button class="voltar-topo" aria-label="Voltar ao topo" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 3.5 2.5 9l1.1 1.1L7.25 6.4V13h1.5V6.4l3.65 3.7L13.5 9z"/></svg></button>
+
+<script type="application/json" id="dados-graficos">{"medianas":[{"v":0.59,"f":"6659|148.163.220.5","r":"BR-BR"},{"v":1.36,"f":"6790|200.160.6.19","r":"BR-BR"},{"v":1.39,"f":"6659|200.160.6.19","r":"BR-BR"},{"v":1.41,"f":"6790|148.163.220.5","r":"BR-BR"},{"v":1.66,"f":"6336|185.138.143.34","r":"DE-DE"},{"v":1.7,"f":"6410|148.163.220.5","r":"BR-BR"},{"v":1.71,"f":"6602|200.160.6.19","r":"BR-BR"},{"v":4.12,"f":"6332|185.138.143.34","r":"DE-DE"},{"v":7.32,"f":"6346|81.169.160.78","r":"DE-DE"},{"v":7.47,"f":"6346|185.138.143.34","r":"DE-DE"},{"v":7.51,"f":"6342|185.138.143.34","r":"NL-DE"},{"v":8.12,"f":"6511|185.138.143.34","r":"NL-DE"},{"v":8.76,"f":"7505|200.3.168.71","r":"AR-AR"},{"v":8.93,"f":"6374|185.138.143.34","r":"NL-DE"},{"v":9.3,"f":"7505|190.124.192.162","r":"AR-AR"},{"v":10.13,"f":"6331|185.138.143.34","r":"DE-DE"},{"v":10.14,"f":"6313|81.169.160.78","r":"DE-DE"},{"v":10.62,"f":"6336|81.169.160.78","r":"DE-DE"},{"v":13.01,"f":"6332|81.169.160.78","r":"DE-DE"},{"v":13.78,"f":"7542|200.3.168.71","r":"AR-AR"},{"v":13.93,"f":"7099|200.3.168.71","r":"AR-AR"},{"v":15.79,"f":"6790|200.132.1.32","r":"BR-BR"},{"v":16.06,"f":"6349|190.64.201.9","r":"BR-UY"},{"v":16.32,"f":"6659|200.132.1.32","r":"BR-BR"},{"v":16.38,"f":"6511|81.169.160.78","r":"NL-DE"},{"v":16.45,"f":"6349|148.163.220.5","r":"BR-BR"},{"v":16.49,"f":"6602|200.132.1.32","r":"BR-BR"},{"v":16.57,"f":"6349|200.160.6.19","r":"BR-BR"},{"v":16.59,"f":"6410|200.132.1.32","r":"BR-BR"},{"v":18.2,"f":"6374|81.169.160.78","r":"NL-DE"},{"v":18.47,"f":"6342|81.169.160.78","r":"NL-DE"},{"v":23.08,"f":"6349|200.7.84.24","r":"BR-UY"},{"v":23.34,"f":"7542|190.124.192.162","r":"AR-AR"},{"v":25.3,"f":"6659|190.64.201.9","r":"BR-UY"},{"v":25.39,"f":"6659|200.7.84.24","r":"BR-UY"},{"v":25.46,"f":"6602|190.64.201.9","r":"BR-UY"},{"v":25.54,"f":"6790|190.64.201.9","r":"BR-UY"},{"v":25.62,"f":"6790|200.7.84.24","r":"BR-UY"},{"v":25.95,"f":"6410|190.64.201.9","r":"BR-UY"},{"v":26.28,"f":"6410|200.7.84.24","r":"BR-UY"},{"v":27.32,"f":"6602|200.7.84.24","r":"BR-UY"},{"v":32.4,"f":"6336|185.32.189.249","r":"DE-PT"},{"v":35.67,"f":"6313|185.32.189.249","r":"DE-PT"},{"v":37.64,"f":"6336|204.27.68.152","r":"DE-PT"},{"v":38.01,"f":"6332|91.209.16.127","r":"DE-PT"},{"v":38.75,"f":"6332|185.32.189.249","r":"DE-PT"},{"v":39.01,"f":"6604|5.188.108.64","r":"ES-PL"},{"v":39.26,"f":"6968|139.180.132.31","r":"IN-SG"},{"v":39.33,"f":"6336|91.209.16.127","r":"DE-PT"},{"v":41.22,"f":"6346|185.32.189.249","r":"DE-PT"},{"v":41.61,"f":"6332|204.27.68.152","r":"DE-PT"},{"v":42.66,"f":"6313|91.209.16.127","r":"DE-PT"},{"v":42.86,"f":"6604|195.187.36.10","r":"ES-PL"},{"v":43.73,"f":"6331|185.32.189.249","r":"DE-PT"},{"v":43.77,"f":"6313|204.27.68.152","r":"DE-PT"},{"v":44.5,"f":"6668|195.187.36.10","r":"ES-PL"},{"v":45.46,"f":"6668|5.188.108.64","r":"ES-PL"},{"v":45.98,"f":"6926|195.187.36.10","r":"ES-PL"},{"v":51.62,"f":"6935|102.206.164.247","r":"ZA-KE"},{"v":51.92,"f":"6346|91.209.16.127","r":"DE-PT"},{"v":51.94,"f":"7222|102.206.164.247","r":"ZA-KE"},{"v":51.97,"f":"6331|91.209.16.127","r":"DE-PT"},{"v":53.81,"f":"6352|188.241.28.37","r":"ES-PL"},{"v":53.84,"f":"6926|188.241.28.37","r":"ES-PL"},{"v":54.32,"f":"6926|5.188.108.64","r":"ES-PL"},{"v":54.38,"f":"6668|188.241.28.37","r":"ES-PL"},{"v":55.04,"f":"6346|204.27.68.152","r":"DE-PT"},{"v":56.02,"f":"6993|196.6.220.42","r":"ZA-KE"},{"v":56.06,"f":"7222|196.6.220.42","r":"ZA-KE"},{"v":56.79,"f":"6659|200.58.72.14","r":"BR-BO"},{"v":56.88,"f":"6993|102.217.156.154","r":"ZA-KE"},{"v":57.24,"f":"6569|196.6.220.42","r":"ZA-KE"},{"v":57.84,"f":"6687|195.187.36.10","r":"ES-PL"},{"v":58.53,"f":"7269|107.162.219.5","r":"IN-SG"},{"v":58.68,"f":"6604|188.241.28.37","r":"ES-PL"},{"v":59.27,"f":"6352|5.188.108.64","r":"ES-PL"},{"v":59.81,"f":"6993|102.206.164.247","r":"ZA-KE"},{"v":59.89,"f":"6352|195.187.36.10","r":"ES-PL"},{"v":60.0,"f":"6331|204.27.68.152","r":"DE-PT"},{"v":60.36,"f":"6569|102.206.164.247","r":"ZA-KE"},{"v":61.81,"f":"6935|196.6.220.42","r":"ZA-KE"},{"v":62.81,"f":"6968|107.162.219.5","r":"IN-SG"},{"v":64.68,"f":"6687|188.241.28.37","r":"ES-PL"},{"v":65.3,"f":"6687|5.188.108.64","r":"ES-PL"},{"v":67.42,"f":"6779|196.6.220.42","r":"ZA-KE"},{"v":70.17,"f":"6953|107.162.219.5","r":"IN-SG"},{"v":72.37,"f":"6935|102.217.156.154","r":"ZA-KE"},{"v":77.05,"f":"6569|102.217.156.154","r":"ZA-KE"},{"v":80.07,"f":"6602|200.58.72.14","r":"BR-BO"},{"v":80.28,"f":"6790|200.58.72.14","r":"BR-BO"},{"v":80.94,"f":"6953|139.180.132.31","r":"IN-SG"},{"v":81.54,"f":"6410|200.58.72.14","r":"BR-BO"},{"v":83.66,"f":"7375|139.180.132.31","r":"IN-SG"},{"v":85.45,"f":"7375|107.162.219.5","r":"IN-SG"},{"v":96.34,"f":"6349|200.58.72.14","r":"BR-BO"},{"v":101.97,"f":"7269|139.180.132.31","r":"IN-SG"},{"v":103.62,"f":"7277|139.180.132.31","r":"IN-SG"},{"v":110.81,"f":"6428|148.163.220.5","r":"US-BR"},{"v":114.07,"f":"7277|107.162.219.5","r":"IN-SG"},{"v":127.13,"f":"6379|148.163.220.5","r":"US-BR"},{"v":129.71,"f":"6389|148.163.220.5","r":"US-BR"},{"v":132.91,"f":"6379|200.160.6.19","r":"US-BR"},{"v":133.42,"f":"6428|200.160.6.19","r":"US-BR"},{"v":136.88,"f":"6428|200.132.1.32","r":"US-BR"},{"v":142.11,"f":"6389|200.160.6.19","r":"US-BR"},{"v":148.64,"f":"6373|148.163.220.5","r":"US-BR"},{"v":153.68,"f":"6373|200.160.6.19","r":"US-BR"},{"v":156.79,"f":"6410|188.172.217.86","r":"BR-ZA"},{"v":162.0,"f":"6790|188.172.217.86","r":"BR-ZA"},{"v":164.72,"f":"6379|200.132.1.32","r":"US-BR"},{"v":166.71,"f":"6373|200.132.1.32","r":"US-BR"},{"v":168.14,"f":"6389|200.132.1.32","r":"US-BR"},{"v":169.4,"f":"6407|148.163.220.5","r":"US-BR"},{"v":169.47,"f":"6407|200.160.6.19","r":"US-BR"},{"v":171.09,"f":"6779|102.206.164.247","r":"ZA-KE"},{"v":171.8,"f":"6349|188.172.217.86","r":"BR-ZA"},{"v":190.1,"f":"6407|200.132.1.32","r":"US-BR"},{"v":195.48,"f":"6779|102.217.156.154","r":"ZA-KE"},{"v":207.47,"f":"7222|102.217.156.154","r":"ZA-KE"},{"v":253.38,"f":"6790|102.130.49.144","r":"BR-ZA"},{"v":264.27,"f":"6602|103.202.216.76","r":"BR-JP"},{"v":264.92,"f":"6659|103.202.216.76","r":"BR-JP"},{"v":265.54,"f":"6659|104.238.161.230","r":"BR-JP"},{"v":265.9,"f":"6659|156.154.184.254","r":"BR-IN"},{"v":266.62,"f":"6790|202.214.97.16","r":"BR-JP"},{"v":267.72,"f":"6410|156.154.184.254","r":"BR-IN"},{"v":268.54,"f":"6790|156.154.184.254","r":"BR-IN"},{"v":269.92,"f":"6659|202.214.97.16","r":"BR-JP"},{"v":270.12,"f":"6410|104.238.161.230","r":"BR-JP"},{"v":271.87,"f":"6790|116.206.155.229","r":"BR-IN"},{"v":273.45,"f":"6602|116.206.155.229","r":"BR-IN"},{"v":275.71,"f":"6602|202.214.97.16","r":"BR-JP"},{"v":277.41,"f":"6410|102.130.49.144","r":"BR-ZA"},{"v":278.78,"f":"6659|116.206.155.229","r":"BR-IN"},{"v":279.25,"f":"6349|102.130.49.144","r":"BR-ZA"},{"v":279.98,"f":"6790|103.202.216.76","r":"BR-JP"},{"v":281.95,"f":"6602|104.238.161.230","r":"BR-JP"},{"v":282.54,"f":"6410|202.214.97.16","r":"BR-JP"},{"v":282.76,"f":"6349|104.238.161.230","r":"BR-JP"},{"v":286.39,"f":"6410|103.202.216.76","r":"BR-JP"},{"v":289.93,"f":"6790|104.238.161.230","r":"BR-JP"},{"v":294.01,"f":"6349|103.202.216.76","r":"BR-JP"},{"v":298.45,"f":"6349|156.154.184.254","r":"BR-IN"},{"v":302.53,"f":"6602|156.154.184.254","r":"BR-IN"},{"v":306.86,"f":"6349|202.214.97.16","r":"BR-JP"},{"v":319.7,"f":"6790|159.65.150.114","r":"BR-IN"},{"v":327.39,"f":"6659|159.65.150.114","r":"BR-IN"},{"v":330.57,"f":"6602|159.65.150.114","r":"BR-IN"},{"v":330.58,"f":"6410|116.206.155.229","r":"BR-IN"},{"v":349.74,"f":"6410|159.65.150.114","r":"BR-IN"},{"v":349.76,"f":"6349|116.206.155.229","r":"BR-IN"},{"v":353.83,"f":"6602|41.79.249.228","r":"BR-ZA"},{"v":361.98,"f":"6349|159.65.150.114","r":"BR-IN"},{"v":363.39,"f":"6790|41.79.249.228","r":"BR-ZA"},{"v":364.92,"f":"6659|41.79.249.228","r":"BR-ZA"},{"v":380.3,"f":"6349|41.79.249.228","r":"BR-ZA"},{"v":385.22,"f":"6410|41.79.249.228","r":"BR-ZA"}],"rotas":[{"rota_id":"BR-BR","fluxos":12,"mediana":8.8},{"rota_id":"DE-DE","fluxos":8,"mediana":8.8},{"rota_id":"NL-DE","fluxos":6,"mediana":12.7},{"rota_id":"AR-AR","fluxos":5,"mediana":13.8},{"rota_id":"BR-UY","fluxos":10,"mediana":25.5},{"rota_id":"DE-PT","fluxos":15,"mediana":41.6},{"rota_id":"ES-PL","fluxos":15,"mediana":54.3},{"rota_id":"ZA-KE","fluxos":15,"mediana":60.4},{"rota_id":"BR-BO","fluxos":5,"mediana":80.3},{"rota_id":"IN-SG","fluxos":10,"mediana":82.3},{"rota_id":"US-BR","fluxos":15,"mediana":148.6},{"rota_id":"BR-ZA","fluxos":11,"mediana":279.3},{"rota_id":"BR-JP","fluxos":15,"mediana":280.0},{"rota_id":"BR-IN","fluxos":15,"mediana":302.5}],"dist_bloco":{"treino":{"OK":155878,"RISCO":16043,"FALHA":24812},"validacao":{"OK":64672,"RISCO":6298,"FALHA":7736},"teste":{"OK":97919,"RISCO":8225,"FALHA":11801}},"modelos":{"random_forest":{"teste":{"f1_macro":0.5835202149507404,"acc":0.877790495569969,"recall":{"OK":0.9847935538557379,"RISCO":0.09422492401215805,"FALHA":0.5360562664181001},"precision":{"OK":0.8854181013506689,"RISCO":0.44489092996555685,"FALHA":0.8672881820674527},"f1":{"OK":0.9324656236099561,"RISCO":0.15551319353867762,"FALHA":0.6625818277035873}},"matriz_teste":[[96430,729,760],[7242,775,208],[5237,238,6326]]},"arvore":{"teste":{"f1_macro":0.5806426379420468,"acc":0.8807495018864725,"recall":{"OK":0.9905840541672198,"RISCO":0.08571428571428572,"FALHA":0.5235149563596305},"precision":{"OK":0.8838881345738525,"RISCO":0.5599682287529786,"FALHA":0.8893047358572046},"f1":{"OK":0.9341995011027747,"RISCO":0.1486714466469844,"FALHA":0.6590569660763815}},"matriz_teste":[[96997,348,574],[7325,705,195],[5417,206,6178]]},"persistencia":{"teste":{"f1_macro":0.5831405425432269,"acc":0.8267073636016787,"recall":{"OK":0.9021436084927338,"RISCO":0.23112462006079026,"FALHA":0.6158800101686298},"precision":{"OK":0.9019593828811812,"RISCO":0.23149050170482222,"FALHA":0.6162455485840258},"f1":{"OK":0.902051486280877,"RISCO":0.23130741619516942,"FALHA":0.6160627251536342}},"matriz_teste":[[88337,5788,3794],[5592,1901,732],[4010,523,7268]]}},"analise":{"acerto":{"random_forest":{"estavel":0.9733144626997313,"mudanca":0.4220852292186506},"arvore":{"estavel":0.9754271532008286,"mudanca":0.4290816576153432},"persistencia":{"estavel":1.0,"mudanca":0.0}},"pct_mudanca":0.17329263639832126},"importancia":{"random_forest":{"base":0.5810909910541775,"queda":{"z_robusto":0.2234152189895158,"aumento_pct":0.07454798777829696,"jitter_relativo":0.02091129431807374,"perda_pacotes":0.00012760220460657687,"timeout_atual":-6.733249575563427e-06,"n5_timeout":0.00030246683655787976,"n5_aumento80":0.003250256474632063,"n5_risco":0.04623517110439438}},"arvore":{"base":0.5798903924400989,"queda":{"z_robusto":0.21861044757177875,"aumento_pct":0.013007826850993887,"jitter_relativo":0.028766849892277697,"perda_pacotes":0.0,"timeout_atual":0.00011369716986220357,"n5_timeout":0.0004750282914606589,"n5_aumento80":0.0027285325249180406,"n5_risco":0.05027651665252105}}}}</script>
+<script>
+/* Preditor de Risco de Rede — interações e gráficos (SVG desenhado à mão, sem bibliotecas). */
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("dados-graficos").textContent);
+  var NS = "http://www.w3.org/2000/svg";
+  var CL = ["OK", "RISCO", "FALHA"];
+  var MODELOS = [
+    { k: "arvore", nome: "Árvore de Decisão (Tarefa 4)", cor: "var(--m-arvore)" },
+    { k: "random_forest", nome: "Random Forest (entregue)", cor: "var(--m-rf)" }
+  ];
+  var REF = { k: "persistencia", nome: "Persistência (referência)", cor: "var(--m-base)" };
+
+  /* ---------- utilidades ---------- */
+  function num(v, casas) { return Number(v).toLocaleString("pt-BR", { minimumFractionDigits: casas || 0, maximumFractionDigits: casas || 0 }); }
+  function pct(v, casas) { return num(v * 100, casas == null ? 1 : casas) + "%"; }
+  function s(tag, at, pai) {
+    var e = document.createElementNS(NS, tag);
+    for (var a in at) e.setAttribute(a, at[a]);
+    if (pai) pai.appendChild(e);
+    return e;
+  }
+  function h(tag, at, html) {
+    var e = document.createElement(tag);
+    for (var a in at) e.setAttribute(a, at[a]);
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function texto(pai, x, y, t, at) {
+    at = at || {}; at.x = x; at.y = y;
+    var e = s("text", at, pai); e.textContent = t; return e;
+  }
+  /* barra com cantos de 4px só na ponta do dado */
+  function barraV(pai, x, y0, w, alt, at) {
+    var r = Math.min(4, w / 2, alt);
+    var y = y0 - alt;
+    var d = "M" + x + "," + y0 + "V" + (y + r) + "Q" + x + "," + y + " " + (x + r) + "," + y +
+      "H" + (x + w - r) + "Q" + (x + w) + "," + y + " " + (x + w) + "," + (y + r) + "V" + y0 + "Z";
+    at = at || {}; at.d = d; return s("path", at, pai);
+  }
+  function barraH(pai, x0, y, comp, alt, at) {
+    var r = Math.min(4, alt / 2, comp);
+    var x = x0 + comp;
+    var d = "M" + x0 + "," + y + "H" + (x - r) + "Q" + x + "," + y + " " + x + "," + (y + r) +
+      "V" + (y + alt - r) + "Q" + x + "," + (y + alt) + " " + (x - r) + "," + (y + alt) + "H" + x0 + "Z";
+    at = at || {}; at.d = d; return s("path", at, pai);
+  }
+  function tooltip(box) {
+    var t = h("div", { class: "tip", role: "status" }); t.hidden = true; box.appendChild(t);
+    return {
+      show: function (html, ev) {
+        var r = box.getBoundingClientRect();
+        t.innerHTML = html; t.hidden = false;
+        var x = Math.max(70, Math.min(r.width - 70, ev.clientX - r.left));
+        t.style.left = x + "px"; t.style.top = (ev.clientY - r.top) + "px";
+      },
+      hide: function () { t.hidden = true; }
+    };
+  }
+  function ligar(el, tip, html) {
+    el.style.cursor = "default";
+    el.addEventListener("mousemove", function (ev) { tip.show(html, ev); });
+    el.addEventListener("mouseleave", tip.hide);
+    el.addEventListener("touchstart", function (ev) { tip.show(html, ev.touches[0]); }, { passive: true });
+  }
+  function tabelaDados(fig, cab, linhas) {
+    var det = h("details", { class: "dados" });
+    det.appendChild(h("summary", {}, "Ver os dados deste gráfico"));
+    var w = h("div", { class: "tabela-wrap" });
+    var t = "<table><thead><tr>" + cab.map(function (c, i) { return "<th" + (i ? ' class="n"' : "") + ">" + c + "</th>"; }).join("") + "</tr></thead><tbody>";
+    t += linhas.map(function (l) { return "<tr>" + l.map(function (c, i) { return "<td" + (i ? ' class="n"' : "") + ">" + c + "</td>"; }).join("") + "</tr>"; }).join("");
+    w.innerHTML = t + "</tbody></table>";
+    det.appendChild(w);
+    var cap = fig.querySelector("figcaption");
+    fig.insertBefore(det, cap);
+  }
+  function legenda(itens, ref) {
+    var ul = h("ul", { class: "legend" });
+    itens.forEach(function (m) { ul.appendChild(h("li", {}, '<i style="background:' + m.cor + '"></i>' + m.nome)); });
+    if (ref) ul.appendChild(h("li", {}, '<i style="border:1.5px dashed ' + ref.cor + ';background:transparent"></i>' + ref.nome));
+    return ul;
+  }
+  var desenhos = [];
+  function registrar(fn) { desenhos.push(fn); fn(); }
+  var ultimaLargura = 0, tm;
+  window.addEventListener("resize", function () {
+    clearTimeout(tm);
+    tm = setTimeout(function () {
+      if (Math.abs(window.innerWidth - ultimaLargura) < 8) return;
+      ultimaLargura = window.innerWidth; desenhos.forEach(function (f) { f(); });
+    }, 120);
+  });
+  ultimaLargura = window.innerWidth;
+
+  /* ---------- Fig: mediana de RTT por fluxo ---------- */
+  function figMedianas() {
+    var box = document.getElementById("chart-medianas"); if (!box) return;
+    var dados = D.medianas; // [{v, f, r}] ordenado
+    registrar(function () {
+      box.innerHTML = "";
+      var W = Math.max(300, box.clientWidth), H = W < 520 ? 230 : 280;
+      var m = { t: 22, r: 10, b: 30, l: 40 };
+      var iw = W - m.l - m.r, ih = H - m.t - m.b;
+      var max = 400, ticks = [0, 100, 200, 300, 400];
+      var svg = s("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Mediana de RTT de cada um dos 157 fluxos, do menor para o maior" }, box);
+      var g = s("g", { transform: "translate(" + m.l + "," + m.t + ")" }, svg);
+      var grid = s("g", { class: "grid" }, g);
+      ticks.forEach(function (t) {
+        var y = ih - t / max * ih;
+        s("line", { x1: 0, x2: iw, y1: y, y2: y }, grid);
+        texto(g, -8, y + 4, num(t), { "text-anchor": "end" });
+      });
+      texto(g, -8, -10, "ms", { "text-anchor": "end" });
+      var bw = iw / dados.length, gap = bw > 4 ? 1 : 0.4;
+      var tip = tooltip(box);
+      dados.forEach(function (d, i) {
+        var alt = Math.max(1.5, d.v / max * ih);
+        var b = barraV(g, i * bw + gap / 2, ih, Math.max(0.8, bw - gap), alt, { fill: "var(--accent)" });
+        ligar(b, tip, "<b>" + num(d.v, 1) + " ms</b><br>Rota " + d.r + "<br><span class='mono'>" + d.f + "</span>");
+      });
+      var p = dados[0], u = dados[dados.length - 1];
+      texto(g, 2, ih - 8, num(p.v, 2) + " ms (" + p.r + ")", { class: "lbl-strong" });
+      texto(g, iw, ih - u.v / max * ih - 6, num(u.v, 1) + " ms (" + u.r + ")", { class: "lbl-strong", "text-anchor": "end" });
+      s("line", { x1: 0, x2: iw, y1: ih, y2: ih, stroke: "var(--line)" }, g);
+      texto(g, iw / 2, ih + 20, "157 fluxos, do menor para o maior RTT típico", { "text-anchor": "middle" });
+    });
+    tabelaDados(box.closest("figure"), ["Rota", "Fluxos", "Mediana típica (ms)"],
+      D.rotas.map(function (r) { return [r.rota_id, r.fluxos, num(r.mediana, 1)]; }));
+  }
+
+  /* ---------- Fig: distribuição do rótulo por bloco ---------- */
+  function figBlocos() {
+    var box = document.getElementById("chart-blocos"); if (!box) return;
+    var cores = { OK: "var(--ok)", RISCO: "var(--risco)", FALHA: "var(--falha)" };
+    var nomes = { treino: "Treino", validacao: "Validação", teste: "Teste" };
+    var blocos = ["treino", "validacao", "teste"];
+    box.parentNode.insertBefore(legenda(CL.map(function (c) { return { nome: c, cor: cores[c] }; })), box);
+    registrar(function () {
+      box.innerHTML = "";
+      var W = Math.max(300, box.clientWidth), estreito = W < 520;
+      var m = { t: 4, r: 8, b: 4, l: estreito ? 76 : 96 }, linha = 44, alt = 26;
+      var H = m.t + m.b + linha * blocos.length;
+      var iw = W - m.l - m.r;
+      var svg = s("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Proporção de OK, RISCO e FALHA no treino, na validação e no teste" }, box);
+      var tip = tooltip(box);
+      blocos.forEach(function (b, i) {
+        var c = D.dist_bloco[b], tot = c.OK + c.RISCO + c.FALHA, x = m.l, y = m.t + i * linha + (linha - alt) / 2;
+        texto(svg, m.l - 10, y + alt / 2 - 2, nomes[b], { "text-anchor": "end", class: "lbl-strong" });
+        texto(svg, m.l - 10, y + alt / 2 + 12, num(tot), { "text-anchor": "end" });
+        CL.forEach(function (cl, j) {
+          var w = c[cl] / tot * iw;
+          var r = s("rect", { x: x, y: y, width: Math.max(0, w - 2), height: alt, rx: j === 2 ? 4 : 0, fill: cores[cl] }, svg);
+          if (j === 2) s("rect", { x: x, y: y, width: Math.min(4, w - 2), height: alt, fill: cores[cl] }, svg);
+          ligar(r, tip, "<b>" + nomes[b] + " · " + cl + "</b><br>" + num(c[cl]) + " linhas (" + pct(c[cl] / tot) + ")");
+          if (w > 48) texto(svg, x + 8, y + alt / 2 + 4, pct(c[cl] / tot, 1), { fill: "#fff", "font-weight": 650 });
+          x += w;
+        });
+      });
+    });
+    tabelaDados(box.closest("figure"), ["Bloco", "OK", "RISCO", "FALHA", "Total"], blocos.map(function (b) {
+      var c = D.dist_bloco[b]; return [nomes[b], num(c.OK), num(c.RISCO), num(c.FALHA), num(c.OK + c.RISCO + c.FALHA)];
+    }));
+  }
+
+  /* ---------- barras agrupadas verticais (métricas por modelo) ---------- */
+  function fmtv(c, v) { return c.dec ? num(v, 3) : pct(v, 1); }
+  function agrupadas(box, cats, series, ref, eixoDec, aria) {
+    box.parentNode.insertBefore(legenda(series, ref), box);
+    registrar(function () {
+      box.innerHTML = "";
+      var W = Math.max(300, box.clientWidth), estreito = W < 520;
+      var H = estreito ? 250 : 290, m = { t: 20, r: 6, b: 46, l: 38 };
+      var iw = W - m.l - m.r, ih = H - m.t - m.b;
+      var svg = s("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": aria }, box);
+      var g = s("g", { transform: "translate(" + m.l + "," + m.t + ")" }, svg);
+      var grid = s("g", { class: "grid" }, g);
+      [0, .25, .5, .75, 1].forEach(function (t) {
+        var y = ih - t * ih; s("line", { x1: 0, x2: iw, y1: y, y2: y }, grid);
+        texto(g, -8, y + 4, eixoDec ? num(t, t % 1 ? 2 : 0) : num(t * 100) + "%", { "text-anchor": "end" });
+      });
+      var n = series.length + (ref ? 1 : 0), cw = iw / cats.length, pad = cw * (estreito ? .12 : .18);
+      var bw = (cw - 2 * pad) / n;
+      var tip = tooltip(box);
+      cats.forEach(function (c, i) {
+        var x0 = i * cw + pad;
+        series.forEach(function (sr, j) {
+          var v = sr.vals[i], alt = Math.max(1.5, v * ih);
+          var b = barraV(g, x0 + j * bw + 1, ih, bw - 2, alt, { fill: sr.cor });
+          ligar(b, tip, "<b>" + sr.nome + "</b><br>" + c.nome.replace("|", " ") + ": " + fmtv(c, v));
+          if (c.rotular && bw > 26) texto(g, x0 + j * bw + bw / 2, ih - alt - 5, fmtv(c, v), { "text-anchor": "middle", class: "lbl-strong", "font-size": estreito ? 9.5 : 10.5 });
+        });
+        if (ref) {
+          var v = ref.vals[i], alt = Math.max(1.5, v * ih), x = x0 + series.length * bw + 1;
+          var b = s("rect", { x: x + .75, y: ih - alt + .75, width: Math.max(0, bw - 3.5), height: Math.max(0, alt - .75), fill: "none", stroke: ref.cor, "stroke-width": 1.5, "stroke-dasharray": "4 3", rx: 3 }, g);
+          var alvo = s("rect", { x: x, y: ih - alt, width: bw - 2, height: alt, fill: "transparent" }, g);
+          ligar(alvo, tip, "<b>" + ref.nome + "</b><br>" + c.nome.replace("|", " ") + ": " + fmtv(c, v));
         }
-        window.onload = typeWriter;
+        var lin = c.nome.split("|");
+        lin.forEach(function (t, k) { texto(g, i * cw + cw / 2, ih + 18 + k * 13, t, { "text-anchor": "middle", class: k ? "" : "lbl-strong" }); });
+      });
+      s("line", { x1: 0, x2: iw, y1: ih, y2: ih, stroke: "var(--line)" }, g);
+    });
+    var cab = ["Modelo"].concat(cats.map(function (c) { return c.nome.replace("|", " "); }));
+    var linhas = series.concat(ref ? [ref] : []).map(function (sr) { return [sr.nome].concat(sr.vals.map(function (v, i) { return cats[i].dec ? num(v, 4) : pct(v, 2); })); });
+    tabelaDados(box.closest("figure"), cab, linhas);
+  }
 
-        // Efeito de Revelar ao Scrolar (Scroll Reveal)
-        function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var j = 0; j < reveals.length; j++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[j].getBoundingClientRect().top;
-                var elementVisible = 100;
-                if (elementTop < windowHeight - elementVisible) {
-                    reveals[j].classList.add("active");
-                }
-            }
-        }
-        window.addEventListener("scroll", reveal);
-        reveal(); // Chama uma vez para exibir o que já está na tela
+  function figMetricas() {
+    var box = document.getElementById("chart-metricas"); if (!box) return;
+    var cats = [{ nome: "F1 macro|nota geral", k: "f1", rotular: true, dec: true }, { nome: "Recall|OK", k: "OK" }, { nome: "Recall|RISCO", k: "RISCO" }, { nome: "Recall|FALHA", k: "FALHA", rotular: true }];
+    function vals(mk) { var t = D.modelos[mk].teste; return cats.map(function (c) { return c.k === "f1" ? t.f1_macro : t.recall[c.k]; }); }
+    agrupadas(box, cats, MODELOS.map(function (m) { return { nome: m.nome, cor: m.cor, vals: vals(m.k) }; }),
+      { nome: REF.nome, cor: REF.cor, vals: vals("persistencia") }, true, "F1 macro e recall por classe no teste para os três modelos e a referência de persistência");
+  }
 
-        // Simulação do Botão de API
-        function simularAPI() {
-            const btn = document.getElementById('btn-api');
-            btn.innerHTML = "<i class='fa-solid fa-circle-notch fa-spin'></i> Calculando...";
-            btn.style.opacity = "0.8";
-            setTimeout(() => {
-                document.getElementById('api-response').style.display = 'block';
-                btn.innerHTML = "Refazer Predição";
-                btn.style.opacity = "1";
-            }, 1200);
-        }
-    </script>
+  function figTransicao() {
+    var box = document.getElementById("chart-transicao"); if (!box) return;
+    var a = D.analise.acerto;
+    var cats = [{ nome: "Estado se mantém|" + pct(1 - D.analise.pct_mudanca, 0) + " do teste", k: "estavel", rotular: true },
+                { nome: "Estado muda em 12 min|" + pct(D.analise.pct_mudanca, 0) + " do teste", k: "mudanca", rotular: true }];
+    agrupadas(box, cats, MODELOS.map(function (m) { return { nome: m.nome, cor: m.cor, vals: cats.map(function (c) { return a[m.k][c.k]; }) }; }),
+      { nome: REF.nome, cor: REF.cor, vals: cats.map(function (c) { return a.persistencia[c.k]; }) }, false, "Taxa de acerto quando o estado da rede se mantém e quando muda nos próximos 12 minutos");
+  }
+
+  /* ---------- importância por permutação (barras horizontais agrupadas) ---------- */
+  function figImportancia() {
+    var box = document.getElementById("chart-importancia"); if (!box) return;
+    var P = D.importancia, feats = Object.keys(P.random_forest.queda).sort(function (x, y) { return P.random_forest.queda[y] - P.random_forest.queda[x]; });
+    box.parentNode.insertBefore(legenda(MODELOS), box);
+    registrar(function () {
+      box.innerHTML = "";
+      var W = Math.max(300, box.clientWidth), estreito = W < 520;
+      var m = { t: 6, r: 44, b: 26, l: estreito ? 108 : 128 }, grupo = estreito ? 30 : 32, bh = (grupo - 8) / MODELOS.length;
+      var maiorV = Math.max.apply(null, MODELOS.map(function (md) { return Math.max.apply(null, feats.map(function (f) { return P[md.k].queda[f]; })); }));
+      var max = Math.ceil(maiorV / 0.05) * 0.05, passos = [];
+      for (var t0 = 0; t0 <= max + 1e-9; t0 += 0.05) passos.push(Math.round(t0 * 100) / 100);
+      var H = m.t + m.b + grupo * feats.length, iw = W - m.l - m.r;
+      var svg = s("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Queda do F1 macro ao embaralhar cada atributo, por modelo" }, box);
+      var g = s("g", { transform: "translate(" + m.l + "," + m.t + ")" }, svg), ih = grupo * feats.length;
+      var grid = s("g", { class: "grid" }, g);
+      passos.forEach(function (t) {
+        var x = t / max * iw; s("line", { x1: x, x2: x, y1: 0, y2: ih }, grid);
+        if (!estreito || t * 100 % 10 === 0) texto(g, x, ih + 16, num(t, 2), { "text-anchor": "middle" });
+      });
+      var tip = tooltip(box);
+      feats.forEach(function (f, i) {
+        var y0 = i * grupo + 4;
+        texto(g, -10, y0 + grupo / 2, f, { "text-anchor": "end", class: "mono lbl-strong", "font-family": "var(--mono)", "font-size": estreito ? 10.5 : 11.5 });
+        MODELOS.forEach(function (md, j) {
+          var v = Math.max(0, P[md.k].queda[f]), w = Math.max(1.5, v / max * iw);
+          var b = barraH(g, 0, y0 + j * bh, w, bh - 1.5, { fill: md.cor });
+          ligar(b, tip, "<b>" + md.nome + "</b><br><span class='mono'>" + f + "</span>: −" + num(v, 3) + " de F1 macro");
+          if (i < 2 && v > 0.02) texto(g, w + 5, y0 + j * bh + bh / 2 + 2, num(v, 3), { "font-size": 9.5 });
+        });
+      });
+      s("line", { x1: 0, x2: 0, y1: 0, y2: ih, stroke: "var(--line)" }, g);
+    });
+    tabelaDados(box.closest("figure"), ["Atributo"].concat(MODELOS.map(function (m) { return m.nome; })),
+      feats.map(function (f) { return [f].concat(MODELOS.map(function (m) { return num(P[m.k].queda[f], 4); })); }));
+  }
+
+  /* ---------- matrizes de confusão ---------- */
+  function figMatrizes() {
+    var box = document.getElementById("matrizes"); if (!box) return;
+    MODELOS.concat([{ k: "persistencia", nome: "Persistência (referência)", cor: "var(--m-base)" }]).forEach(function (md) {
+      var M = D.modelos[md.k].matriz_teste;
+      var d = h("div", { class: "matriz" });
+      var t = "<h4><i style='background:" + md.cor + "'></i>" + md.nome + "</h4><table><thead><tr><th></th>" +
+        CL.map(function (c) { return "<th>prev. " + c + "</th>"; }).join("") + "</tr></thead><tbody>";
+      M.forEach(function (lin, i) {
+        var tot = lin.reduce(function (a, b) { return a + b; }, 0);
+        t += "<tr><th>real " + CL[i] + "</th>" + lin.map(function (v, j) {
+          var p = v / tot, cheio = p > 0.45;
+          var fundo = "color-mix(in srgb, var(--accent) " + Math.round(8 + p * 82) + "%, var(--surface))";
+          var cor = cheio ? "#fff" : "var(--ink)";
+          var marca = i === j ? "acerto" : "erro";
+          return "<td title='" + marca + ": " + num(v) + " de " + num(tot) + "' style='background:" + fundo + ";color:" + cor + "'><b>" + pct(p, 0) + "</b><span>" + num(v) + "</span></td>";
+        }).join("") + "</tr>";
+      });
+      d.innerHTML = t + "</tbody></table><div class='matriz-eixo'>% de cada linha real · contagem embaixo</div>";
+      box.appendChild(d);
+    });
+  }
+
+  /* ---------- cabeçalho: progresso, gaveta, voltar ao topo ---------- */
+  function cabecalho() {
+    var barra = document.querySelector(".progress");
+    var topo = document.querySelector(".voltar-topo");
+    var links = Array.prototype.slice.call(document.querySelectorAll(".drawer a[href^='#']"));
+    var secoes = links.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); });
+    var pend = false;
+    function rolar() {
+      if (pend) return; pend = true;
+      requestAnimationFrame(function () {
+        pend = false;
+        var d = document.documentElement, max = d.scrollHeight - d.clientHeight;
+        if (barra) barra.style.transform = "scaleX(" + (max > 0 ? Math.min(1, d.scrollTop / max) : 0) + ")";
+        if (topo) topo.hidden = d.scrollTop < 900;
+        var atual = -1;
+        secoes.forEach(function (sc, i) { if (sc && sc.getBoundingClientRect().top < 140) atual = i; });
+        links.forEach(function (a, i) { a.classList.toggle("ativo", i === atual); });
+      });
+    }
+    window.addEventListener("scroll", rolar, { passive: true }); rolar();
+    if (topo) topo.addEventListener("click", function () { window.scrollTo({ top: 0 }); });
+
+    var btn = document.getElementById("abrir-secoes"), gav = document.getElementById("secoes"), fundo = document.getElementById("fundo-gaveta");
+    var fechar = document.getElementById("fechar-secoes");
+    function abrir() { gav.hidden = false; fundo.hidden = false; requestAnimationFrame(function () { gav.classList.add("open"); }); btn.setAttribute("aria-expanded", "true"); fechar.focus(); }
+    function fecha(voltarFoco) {
+      gav.classList.remove("open"); fundo.hidden = true; btn.setAttribute("aria-expanded", "false");
+      setTimeout(function () { gav.hidden = true; }, 280); if (voltarFoco) btn.focus();
+    }
+    btn.addEventListener("click", abrir);
+    fechar.addEventListener("click", function () { fecha(true); });
+    fundo.addEventListener("click", function () { fecha(true); });
+    gav.addEventListener("click", function (e) { if (e.target.closest("a")) fecha(false); });
+    document.addEventListener("keydown", function (e) {
+      if (gav.hidden) return;
+      if (e.key === "Escape") fecha(true);
+      if (e.key === "Tab") {
+        var f = gav.querySelectorAll("a, button"), pri = f[0], ult = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === pri) { e.preventDefault(); ult.focus(); }
+        else if (!e.shiftKey && document.activeElement === ult) { e.preventDefault(); pri.focus(); }
+      }
+    });
+  }
+
+  /* ---------- abas da API e botões de copiar ---------- */
+  function abas() {
+    document.querySelectorAll("[data-abas]").forEach(function (grupo) {
+      var bts = grupo.querySelectorAll("[role=tab]");
+      bts.forEach(function (b) {
+        b.addEventListener("click", function () {
+          bts.forEach(function (o) { o.setAttribute("aria-selected", o === b ? "true" : "false"); document.getElementById(o.getAttribute("aria-controls")).hidden = o !== b; });
+        });
+      });
+    });
+    document.querySelectorAll(".copiar").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var alvo = document.getElementById(b.getAttribute("data-alvo")), txt = alvo.innerText;
+        function ok() { b.textContent = "Copiado"; setTimeout(function () { b.textContent = "Copiar"; }, 1600); }
+        function sel() { var r = document.createRange(); r.selectNodeContents(alvo); var se = window.getSelection(); se.removeAllRanges(); se.addRange(r); b.textContent = "Selecionado: Ctrl+C"; }
+        try { navigator.clipboard.writeText(txt).then(ok, sel); } catch (e) { sel(); }
+      });
+    });
+  }
+
+  cabecalho(); abas();
+  figMedianas(); figBlocos(); figMetricas(); figTransicao(); figImportancia(); figMatrizes();
+})();
+
+</script>
 </body>
 </html>

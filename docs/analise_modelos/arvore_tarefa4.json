@@ -1,0 +1,10 @@
+{
+ "arvore": {
+  "melhor_params": {
+   "criterion": "entropy",
+   "max_depth": 8,
+   "min_samples_leaf": 5,
+   "class_weight": null
+  }
+ }
+}

@@ -1,0 +1,54 @@
+{
+ "falha": {
+  "n_candidatos": 1944,
+  "fluxo_id": "6953|107.162.219.5",
+  "rota": "IN-SG",
+  "timestamp_utc": "2026-11-01 02:27:06",
+  "latencia": 74.86,
+  "mediana": 70.17,
+  "entrada": {
+   "z_robusto": 6.9977,
+   "aumento_pct": 6.6832,
+   "jitter_relativo": 1.4408,
+   "perda_pacotes": 0.0,
+   "timeout_atual": 0,
+   "n5_timeout": 0,
+   "n5_aumento80": 0,
+   "n5_risco": 0
+  },
+  "classe_agora": "FALHA",
+  "rotulo_12min": "FALHA",
+  "previsto": "FALHA",
+  "votos": {
+   "FALHA": 0.96,
+   "OK": 0.04,
+   "RISCO": 0.0
+  }
+ },
+ "ok": {
+  "n_candidatos": 7037,
+  "fluxo_id": "6602|104.238.161.230",
+  "rota": "BR-JP",
+  "timestamp_utc": "2026-11-02 06:49:28",
+  "latencia": 297.81,
+  "mediana": 281.95,
+  "entrada": {
+   "z_robusto": 0.7295,
+   "aumento_pct": 5.6277,
+   "jitter_relativo": 2.5772,
+   "perda_pacotes": 0.0,
+   "timeout_atual": 0,
+   "n5_timeout": 0,
+   "n5_aumento80": 0,
+   "n5_risco": 1
+  },
+  "classe_agora": "OK",
+  "rotulo_12min": "OK",
+  "previsto": "OK",
+  "votos": {
+   "FALHA": 0.01,
+   "OK": 0.93,
+   "RISCO": 0.06
+  }
+ }
+}
