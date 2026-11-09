@@ -651,7 +651,7 @@ export default function Hero() {
                   Predição de Falha da IA
                 </h4>
                 <p className="text-xs text-[#93a4b8] font-sans">
-                  Previsão antecipada para T+12 min (Random Forest)
+                  Previsão para T+12 min (Árvore de Decisão)
                 </p>
               </div>
             </div>
@@ -691,7 +691,7 @@ export default function Hero() {
 
               <div className="text-right hidden sm:block">
                 <span className="text-[10px] text-[#93a4b8] font-mono block">F1-Score</span>
-                <span className="text-xs font-mono font-bold text-cyan-400">0.584 (Teste)</span>
+                <span className="text-xs font-mono font-bold text-cyan-400">0.562 (Teste)</span>
               </div>
             </div>
 

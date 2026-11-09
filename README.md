@@ -14,6 +14,7 @@ Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a pa
 | 🎥 Vídeo pitch (90 s, YouTube não listado) | **https://youtu.be/h0cTuHPZZOc** |
 | 🗂️ Repositório do artigo | https://github.com/Yuoneeh/Artigo_Preditor_de_redes |
 | 🌐 Site do projeto (`docs/index.html`) | https://projetoredesestdados-docs.vercel.app |
+| 🗺️ Mapa interativo (`mapa-interativo/`) | https://gs-redes.vercel.app (também embutido na seção 9 do site) |
 | 💻 Este repositório | https://github.com/Yuoneeh/Projeto_Redes_EstDados |
 
 Caminho de acesso: QR Code → artigo → repositório.
@@ -53,16 +54,30 @@ O detector reproduz com folga a política de rótulo, porque o rótulo usa as me
 ## 🗂️ Estrutura do repositório
 
 ```text
-├── src/                      coletor_mesh.py (coleta do RIPE Atlas)
-├── notebooks/isaque/         coleta e Tarefas 2 a 5 (baseline, rótulo, árvore, ajuste, teste final)
-├── Entrega_04_11/
-│   ├── Dataset_usado/        baseline_por_fluxo.csv e dataset_final_treino.csv
-│   ├── ArvoreDecisao/        arvore_protocolo_b.joblib e metadados.json
-│   └── RandomForest/         Modelo_Random_Forest.txt
-├── data/log_rede.csv         log do Kickoff (legado)
-├── docs/                     site do projeto (index.html, logo, QR Code)
+├── src/                      coleta do RIPE Atlas em Python (coletor_mesh.py; legacy/ com a primeira versão)
+├── notebooks/                coleta e Tarefas 2 a 5 (baseline, rótulo, árvore, ajuste, teste final)
+├── data/                     baseline, dataset final e log do Kickoff (legado)
+├── Entrega_04_11/            dataset e modelos entregues (o .joblib do RF fica no Google Drive)
+├── docs/                     site do projeto com o artigo (index.html, img/)
+├── mapa-interativo/          painel interativo em Next.js (globo + telemetria)
+│   ├── src/app/              página inicial e rota /api/ping
+│   ├── src/components/       Hero, NetworkGlobe, NetworkTimeline, Navbar, Footer
+│   ├── src/hooks/            use-embedded (esconde cabeçalho e rodapé dentro do iframe)
+│   ├── src/lib/predictor.ts  cálculo das 8 variáveis e percurso da árvore de decisão
+│   ├── src/data/             networkData.json (157 fluxos, baselines e árvore)
+│   └── public/               logo, bandeiras e dados do globo
 └── requirements.txt
 ```
+
+### Rodar o mapa interativo
+
+```bash
+cd mapa-interativo
+npm install
+npm run dev        # http://localhost:3000
+```
+
+Dentro de um iframe (ou com `?embed=1`), o mapa esconde cabeçalho e rodapé e mostra só o globo e o painel.
 
 ## ▶️ Como reproduzir
 

@@ -4,8 +4,13 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { useEmbedded } from "@/hooks/use-embedded";
+
+// Artigo oficial do projeto (site principal)
+const ARTIGO_URL = "https://projetoredesestdados-docs.vercel.app/";
 
 export default function Footer() {
+  const embedded = useEmbedded();
   const members = [
     { name: "Isaque Valim", url: "https://github.com/Isaaquevalim" },
     { name: "Gabriel Pereira", url: "https://github.com/gabriel-couto06" },
@@ -13,6 +18,8 @@ export default function Footer() {
     { name: "Eduardo Silva", url: "https://github.com/Yuoneeh" },
     { name: "Ryan de Paula", url: "https://github.com/ryancrdepaula-cyber" },
   ];
+
+  if (embedded) return null; // dentro do site do artigo, só o mapa aparece
 
   return (
     <footer className="w-full border-t border-white/[0.08] bg-[#0b1a2e] text-[#93a4b8] mt-auto">
@@ -35,15 +42,10 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/artigo" className="group inline-flex items-center gap-1.5 hover:text-white transition-colors">
-                  <span>Artigo Científico</span>
+                <a href={ARTIGO_URL} className="group inline-flex items-center gap-1.5 hover:text-white transition-colors">
+                  <span>Artigo do projeto</span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-[#38c6e0] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </Link>
-              </li>
-              <li>
-                <Link href="/artigo#api" className="hover:text-white transition-colors inline-flex items-center gap-1.5">
-                  <span>API</span>
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

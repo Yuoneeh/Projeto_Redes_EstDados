@@ -73,6 +73,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); }
 body {
   margin: 0; background: var(--paper); color: var(--ink);
@@ -350,6 +351,19 @@ footer.rodape a { color: var(--cyan); }
 
 .voltar-topo { position: fixed; right: max(16px, calc(env(safe-area-inset-right, 0px) + 16px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); z-index: 40; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); box-shadow: var(--shadow); cursor: pointer; display: grid; place-items: center; }
 .voltar-topo svg { width: 18px; height: 18px; }
+/* mapa interativo (site do Gabriel, embutido) */
+.mapa-moldura { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #0d1724; box-shadow: var(--shadow); }
+.mapa-moldura iframe { display: block; width: 100%; height: min(82vh, 860px); min-height: 560px; border: 0; }
+.mapa-moldura:fullscreen { border-radius: 0; border: 0; }
+.mapa-moldura:fullscreen iframe { height: 100vh; }
+.mapa-barra { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin: 0 0 10px; }
+.mapa-barra span { font: 500 .86rem var(--display); color: var(--muted); }
+.mapa-acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn-mapa { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 650 .86rem var(--display); cursor: pointer; text-decoration: none; }
+.btn-mapa:hover { border-color: var(--accent); color: var(--accent-strong); }
+.btn-mapa.primario { background: var(--navy); border-color: var(--navy); color: var(--on-navy); }
+.btn-mapa.primario:hover { color: #fff; }
+@media (max-width: 560px) { .mapa-moldura iframe { height: 78vh; min-height: 520px; } }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -394,8 +408,9 @@ footer.rodape a { color: var(--cyan); }
     <li><a href="#resultados"><span>6</span>Resultados e comparação</a></li>
     <li><a href="#destaque"><span>7</span>Destaque: o melhor modelo</a></li>
     <li><a href="#api"><span>8</span>Como usar a API</a></li>
-    <li><a href="#limitacoes"><span>9</span>Limitações e próximos passos</a></li>
-    <li><a href="#conclusao"><span>10</span>Conclusão</a></li>
+    <li><a href="#mapa"><span>9</span>Mapa interativo</a></li>
+    <li><a href="#limitacoes"><span>10</span>Limitações e próximos passos</a></li>
+    <li><a href="#conclusao"><span>11</span>Conclusão</a></li>
   </ol>
   <ol class="extra">
     <li><a href="#links"><span>↗</span>Links e repositório</a></li>
@@ -413,6 +428,7 @@ footer.rodape a { color: var(--cyan); }
       <p class="meta">Estrutura de Dados II · Redes de Computadores · Análise e Projeto de Sistemas<br>Centro Universitário Braz Cubas · novembro de 2026</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="#introducao">Começar a leitura</a>
+        <a class="btn btn-line" href="#mapa">Ver o mapa interativo</a>
         <a class="btn btn-line" href="https://youtu.be/h0cTuHPZZOc" target="_blank" rel="noopener">Ver o pitch de 90 s</a>
       </div>
     </div>
@@ -950,8 +966,47 @@ print({<span class="s">"previsao_12min"</span>: modelo.predict(entrada)[0],
 </section>
 
 <!-- 9 -->
+<section class="secao" id="mapa">
+  <h2><span class="num">9</span>Mapa interativo: o preditor em ação</h2>
+  <p class="lead">Para ver o pipeline funcionando, o Gabriel Schmidt construiu um painel interativo: um globo com os caminhos monitorados e um painel de telemetria que calcula, a cada medição, as mesmas variáveis que o modelo usa.</p>
+  <div class="wide">
+    <div class="mapa-barra">
+      <span>Digite um IP ou domínio no painel e clique em <b>Conectar</b>, ou use os cenários de demonstração.</span>
+      <div class="mapa-acoes">
+        <button class="btn-mapa primario" type="button" id="mapa-tela-cheia">Tela cheia</button>
+      </div>
+    </div>
+    <div class="mapa-moldura" id="mapa-moldura">
+      <iframe src="https://gs-redes.vercel.app/?embed=1" title="Mapa Mundi interativo do Preditor de Risco de Rede" loading="lazy" allow="fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </div>
+  <h3>O que o painel mostra</h3>
+  <ul>
+    <li><strong>O globo:</strong> o caminho entre a origem e o alvo, colorido pela classe prevista: verde para OK, amarelo para RISCO e vermelho para FALHA.</li>
+    <li><strong>As variáveis do modelo:</strong> z robusto, jitter relativo e as janelas das últimas medições, calculados com as mesmas fórmulas da Tarefa 2.</li>
+    <li><strong>A linha do tempo:</strong> cada medição entra numa fila com as últimas 24 do fluxo, guardada num mapa (tabela hash) por <code>fluxo_id</code>. É dessa fila que saem as janelas n5.</li>
+    <li><strong>A classificação:</strong> feita por uma árvore de decisão de profundidade 4, treinada com os mesmos dados do projeto.</li>
+  </ul>
+  <div class="nota"><b>É uma demonstração.</b> Os números de avaliação do projeto são os das seções 6 e 7. No painel, os cenários de RISCO e FALHA e o percentual de "chance de falha" são ilustrativos, e o ping é medido a partir do servidor que hospeda o site, e não do computador de quem está vendo. O objetivo é mostrar como um operador de rede usaria a previsão.</div>
+  <script>
+    (function () {
+      var b = document.getElementById("mapa-tela-cheia"), m = document.getElementById("mapa-moldura");
+      if (!b || !m) return;
+      if (!m.requestFullscreen) { b.hidden = true; return; }
+      b.addEventListener("click", function () {
+        if (document.fullscreenElement) { document.exitFullscreen(); return; }
+        m.requestFullscreen().catch(function () { window.open("https://gs-redes.vercel.app/", "_blank", "noopener"); });
+      });
+      document.addEventListener("fullscreenchange", function () {
+        b.textContent = document.fullscreenElement ? "Sair da tela cheia" : "Tela cheia";
+      });
+    })();
+  </script>
+</section>
+
+<!-- 10 -->
 <section class="secao" id="limitacoes">
-  <h2><span class="num">9</span>Limitações e próximos passos</h2>
+  <h2><span class="num">10</span>Limitações e próximos passos</h2>
   <h3>Limitações</h3>
   <ul>
     <li><strong>Hoje, um detector.</strong> O modelo reconhece uma degradação em andamento, mas quase nunca antecipa a passagem de OK para FALHA (Figura 8), e não supera a persistência. Pelo critério 3 do RFC, é assim que o sistema deve ser apresentado.</li>
@@ -972,9 +1027,9 @@ print({<span class="s">"previsao_12min"</span>: modelo.predict(entrada)[0],
   </ul>
 </section>
 
-<!-- 10 -->
+<!-- 11 -->
 <section class="secao" id="conclusao">
-  <h2><span class="num">10</span>Conclusão</h2>
+  <h2><span class="num">11</span>Conclusão</h2>
   <p>Construímos um pipeline completo e auditável: coleta pela API do RIPE Atlas, normal aprendido por fluxo, variáveis relativas, rótulo de 12 minutos à frente e divisão temporal sem vazamento. Sobre essa base, a árvore de decisão (implementada à mão e no scikit-learn) e a Random Forest foram avaliadas nas mesmas condições.</p>
   <p>A Random Forest entregue teve o melhor resultado do projeto no teste (F1 macro de 0,584) e encontrou mais FALHAs e RISCOs que a árvore única. Os dois modelos, porém, ficaram empatados com uma regra que repete o estado atual: eles reconhecem a falha que já começou, não a que vai começar. O limite hoje não está no algoritmo, e sim no que as variáveis atuais permitem antecipar com 12 minutos de antecedência. Os próximos passos atacam exatamente esse ponto.</p>
 </section>
