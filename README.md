@@ -1,7 +1,7 @@
 # Preditor de Risco de Rede
 
 <p align="center">
-  <img src="docs/logo_preditorderiscoderede.png" alt="Logo do Preditor de Risco de Rede" width="220">
+  <img src="docs/img/logo_preditorderiscoderede.png" alt="Logo do Preditor de Risco de Rede" width="220">
 </p>
 
 Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a partir de medições de ping do RIPE Atlas. Cada medição é comparada com o **comportamento normal do próprio fluxo** (baseline), e não com um limite global de RTT.
@@ -19,7 +19,7 @@ Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a pa
 Caminho de acesso: QR Code → artigo → repositório.
 
 <p align="center">
-  <img src="docs/qrcode_artigo.png" alt="QR Code do artigo" width="200"><br>
+  <img src="docs/img/qrcode_artigo.png" alt="QR Code do artigo" width="200"><br>
   <sub>QR Code do artigo</sub>
 </p>
 
