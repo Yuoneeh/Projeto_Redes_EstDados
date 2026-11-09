@@ -60,7 +60,7 @@ O detector reproduz com folga a política de rótulo, porque o rótulo usa as me
 │   ├── ArvoreDecisao/        arvore_protocolo_b.joblib e metadados.json
 │   └── RandomForest/         Modelo_Random_Forest.txt
 ├── data/log_rede.csv         log do Kickoff (legado)
-├── docs/                     site do projeto (index.html, logo, QR Code) e tarefas/ (diários das Tarefas 2 a 5)
+├── docs/                     site do projeto (index.html, logo, QR Code)
 └── requirements.txt
 ```
 
