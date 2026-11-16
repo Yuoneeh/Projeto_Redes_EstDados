@@ -987,6 +987,26 @@ print({<span class="s">"previsao_12min"</span>: modelo.predict(entrada)[0],
     <li><strong>A linha do tempo:</strong> cada medição entra numa fila com as últimas 24 do fluxo, guardada num mapa (tabela hash) por <code>fluxo_id</code>. É dessa fila que saem as janelas n5.</li>
     <li><strong>A classificação:</strong> feita pelo modelo <strong>Random Forest</strong> (100 árvores, arquivo <code>random_forest_nov2026.joblib</code>) hospedado via API no Hugging Face Spaces, consumido em tempo real pela rota <code>/api/rf-predict</code>.</li>
   </ul>
+  <h3>Como o mapa funciona por trás dos panos</h3>
+  <ol>
+    <li><strong>Descobrir onde você está no mapa (Ponto de Origem):</strong> ao abrir o site, seu navegador descobre qual é o seu endereço público de internet (IP) e consulta um serviço de localização (<code>ip-api.com</code>) para saber em qual cidade e país esse endereço está. É assim que o globo coloca o pino de partida na sua região, e não no servidor onde o site está hospedado.</li>
+    <li><strong>Localizar o destino e desenhar a rota:</strong> quando você digita um site ou IP (como <code>google.com</code> ou <code>8.8.8.8</code>), o sistema traduz esse nome para o endereço numérico do servidor e descobre em qual cidade do mundo ele fica. Com os dois pontos geográficos em mãos, o mapa desenha o arco 3D ligando você ao destino.</li>
+    <li><strong>Medir o "pulso" da conexão ao vivo:</strong> de tempos em tempos, o servidor do aplicativo envia um teste rápido até o destino (como "bater na porta" para cronometrar a resposta) e anota três sinais vitais:
+      <ul>
+        <li><strong>Latência (RTT):</strong> quanto tempo, em milissegundos, o sinal levou para ir e voltar.</li>
+        <li><strong>Jitter (oscilação):</strong> se o tempo de resposta está firme ou variando muito entre uma medição e outra.</li>
+        <li><strong>Perda de pacotes:</strong> se o sinal falhou ou demorou tanto que deu timeout.</li>
+      </ul>
+    </li>
+    <li><strong>Aprender o "normal" daquela rota (em vez de usar regra fixa):</strong> uma conexão até o Japão naturalmente demora bem mais do que uma conexão dentro de São Paulo — e isso não significa defeito. Por isso, nas primeiras 5 medições, o app aprende qual é o comportamento padrão daquela rota específica. A partir daí, cada nova medição é comparada com esse padrão para gerar 8 notas de comportamento (como quantos % a lentidão subiu, quantas vezes a oscilação piorou em relação ao normal e quantas vezes isso se repetiu nas últimas 5 checagens).</li>
+    <li><strong>O "júri" da Inteligência Artificial dá o veredito na tela:</strong> essas 8 notas são enviadas pela internet até o nosso modelo <strong>Random Forest</strong> hospedado no Hugging Face. Pense nele como um júri com 100 especialistas (árvores de decisão) que já estudaram milhares de falhas reais da internet:
+      <ul>
+        <li>Cada uma das 100 árvores olha as 8 notas e dá seu voto: <span class="tag ok">OK</span>, <span class="tag risco">RISCO</span> ou <span class="tag falha">FALHA</span> para os próximos 12 minutos (<code>T+12m</code>).</li>
+        <li>O resultado com mais votos vence e volta para o site em instantes.</li>
+      </ul>
+    </li>
+  </ol>
+  <p><strong>O que você vê no final:</strong> o arco do globo muda de cor (verde, amarelo ou vermelho), o painel mostra o risco previsto e a linha do tempo registra o motivo daquela decisão.</p>
   <div class="nota"><b>É uma demonstração.</b> Os números de avaliação do projeto são os das seções 6 e 7. No painel, os cenários simulados de RISCO e FALHA e o percentual de "chance de falha" são ilustrativos. Na medição ao vivo, o ponto de origem no globo usa o IP externo real do visitante (geolocalizado via <code>ip-api.com</code>), enquanto os testes de latência (TCP Handshake / ICMP) partem do servidor que hospeda a aplicação até o alvo escolhido.</div>
   <script>
     (function () {
