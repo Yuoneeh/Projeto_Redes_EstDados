@@ -172,12 +172,30 @@ export default function Hero() {
         prevRttRef.current = rawRtt;
 
         const past = storeRef.current.getHistory(flowToPing.fluxo_id);
-        const { sample } = evaluateFlowSample(
+        const { sample, evaluation } = evaluateFlowSample(
           flowToPing,
           past,
           { rtt: rawRtt, jitter, loss },
           dataset.models.tree_t4
         );
+
+        // Consulta o modelo Random Forest real hospedado no Hugging Face Space (com fallback para a árvore local)
+        try {
+          const rfRes = await fetch("/api/rf-predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(evaluation.features),
+            signal: AbortSignal.timeout(4500),
+          });
+          if (rfRes.ok) {
+            const rfData = await rfRes.json();
+            if (rfData?.predictedClass === "OK" || rfData?.predictedClass === "RISCO" || rfData?.predictedClass === "FALHA") {
+              sample.rotulo = rfData.predictedClass;
+            }
+          }
+        } catch {
+          // Mantém a predição local da árvore CART caso a API externa esteja em cold-start
+        }
 
         storeRef.current.pushSample(flowToPing.fluxo_id, sample);
         setLatestSamples({
