@@ -179,23 +179,24 @@ export default function Hero() {
           dataset.models.tree_t4
         );
 
-        // Consulta o modelo Random Forest real hospedado no Hugging Face Space (com fallback para a árvore local)
-        try {
-          const rfRes = await fetch("/api/rf-predict", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(evaluation.features),
-            signal: AbortSignal.timeout(4500),
-          });
-          if (rfRes.ok) {
-            const rfData = await rfRes.json();
-            if (rfData?.predictedClass === "OK" || rfData?.predictedClass === "RISCO" || rfData?.predictedClass === "FALHA") {
-              sample.rotulo = rfData.predictedClass;
-            }
-          }
-        } catch {
-          // Mantém a predição local da árvore CART caso a API externa esteja em cold-start
+        // Classificação obrigatória usando o modelo Random Forest treinado no Hugging Face Space
+        const rfRes = await fetch("/api/rf-predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(evaluation.features),
+          signal: AbortSignal.timeout(8000),
+        });
+
+        if (!rfRes.ok) {
+          const rfErr = await rfRes.json().catch(() => ({}));
+          throw new Error(rfErr.error || "Modelo Random Forest (Hugging Face) indisponível no momento.");
         }
+
+        const rfData = await rfRes.json();
+        if (rfData?.predictedClass !== "OK" && rfData?.predictedClass !== "RISCO" && rfData?.predictedClass !== "FALHA") {
+          throw new Error("Resposta inválida do modelo Random Forest (Hugging Face).");
+        }
+        sample.rotulo = rfData.predictedClass;
 
         storeRef.current.pushSample(flowToPing.fluxo_id, sample);
         setLatestSamples({
