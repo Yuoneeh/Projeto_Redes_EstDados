@@ -15,6 +15,7 @@ Classificador de **três estados (OK, RISCO e FALHA)** para fluxos de rede, a pa
 | 🗂️ Repositório do artigo | https://github.com/Yuoneeh/Artigo_Preditor_de_redes |
 | 🌐 Site do projeto (`docs/index.html`) | https://projetoredesestdados-docs.vercel.app |
 | 🗺️ Mapa interativo (`mapa-interativo/`) | https://gs-redes.vercel.app (também embutido na seção 9 do site) |
+| 🤗 Modelo Random Forest (API Hugging Face) | https://huggingface.co/spaces/GSchmiidt/preditor-redes-api |
 | 💻 Este repositório | https://github.com/Yuoneeh/Projeto_Redes_EstDados |
 
 Caminho de acesso: QR Code → artigo → repositório.
