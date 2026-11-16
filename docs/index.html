@@ -985,9 +985,9 @@ print({<span class="s">"previsao_12min"</span>: modelo.predict(entrada)[0],
     <li><strong>O globo:</strong> o caminho entre a origem e o alvo, colorido pela classe prevista: verde para OK, amarelo para RISCO e vermelho para FALHA.</li>
     <li><strong>As variáveis do modelo:</strong> z robusto, jitter relativo e as janelas das últimas medições, calculados com as mesmas fórmulas da Tarefa 2.</li>
     <li><strong>A linha do tempo:</strong> cada medição entra numa fila com as últimas 24 do fluxo, guardada num mapa (tabela hash) por <code>fluxo_id</code>. É dessa fila que saem as janelas n5.</li>
-    <li><strong>A classificação:</strong> feita por uma árvore de decisão de profundidade 4, treinada com os mesmos dados do projeto.</li>
+    <li><strong>A classificação:</strong> feita pelo modelo <strong>Random Forest</strong> (100 árvores, arquivo <code>random_forest_nov2026.joblib</code>) hospedado via API no Hugging Face Spaces, consumido em tempo real pela rota <code>/api/rf-predict</code>.</li>
   </ul>
-  <div class="nota"><b>É uma demonstração.</b> Os números de avaliação do projeto são os das seções 6 e 7. No painel, os cenários de RISCO e FALHA e o percentual de "chance de falha" são ilustrativos, e o ping é medido a partir do servidor que hospeda o site, e não do computador de quem está vendo. O objetivo é mostrar como um operador de rede usaria a previsão.</div>
+  <div class="nota"><b>É uma demonstração.</b> Os números de avaliação do projeto são os das seções 6 e 7. No painel, os cenários simulados de RISCO e FALHA e o percentual de "chance de falha" são ilustrativos. Na medição ao vivo, o ponto de origem no globo usa o IP externo real do visitante (geolocalizado via <code>ip-api.com</code>), enquanto os testes de latência (TCP Handshake / ICMP) partem do servidor que hospeda a aplicação até o alvo escolhido.</div>
   <script>
     (function () {
       var b = document.getElementById("mapa-tela-cheia"), m = document.getElementById("mapa-moldura");
