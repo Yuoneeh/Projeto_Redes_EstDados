@@ -874,7 +874,7 @@ footer.rodape a { color: var(--cyan); }
 <!-- 8 -->
 <section class="secao" id="api">
   <h2><span class="num">8</span>Como usar a API</h2>
-  <p>O projeto usa duas interfaces. A primeira é a <strong>API REST pública do RIPE Atlas</strong>, de onde vêm todos os dados. A segunda é o <strong>contrato de entrada e saída do modelo</strong>: que variáveis entram, em que ordem, e o que sai. Não mantemos um servidor próprio no ar; o modelo treinado é um arquivo que outro sistema carrega e consulta.</p>
+  <p>O projeto usa duas interfaces. A primeira é a <strong>API REST pública do RIPE Atlas</strong>, de onde vêm os dados históricos de treino e validação. A segunda é o <strong>contrato de entrada e saída do modelo</strong>: que variáveis entram, em que ordem, e o que sai. Além de disponibilizarmos o arquivo treinado para uso local, o modelo <strong>Random Forest</strong> agora também está hospedado e ativo em uma API pública no <a href="https://huggingface.co/spaces/GSchmiidt/preditor-redes-api" target="_blank" rel="noopener">Hugging Face Spaces</a>, consumida em tempo real pelo nosso mapa interativo.</p>
 
   <h3>A. API do RIPE Atlas</h3>
   <p>O endereço base é <code>https://atlas.ripe.net/api/v2</code>. Todas as chamadas são <code>GET</code>, públicas e sem chave.</p>
@@ -939,8 +939,9 @@ footer.rodape a { color: var(--cyan); }
   </div>
   <p>O anchor <code>170.81.100.114</code> do segundo exemplo é o mesmo que o RFC cita como excluído por não ter RTT válido no Período A: ele seguia sem responder.</p>
 
-  <h3>B. Consultar o Random Forest entregue</h3>
+  <h3>B. Consultar o Random Forest entregue (local e API no Hugging Face)</h3>
   <p>O modelo recebe as 8 variáveis relativas, sempre nesta ordem, e devolve a classe prevista para daqui a 12 minutos. Para calcular as variáveis, o sistema precisa da ficha do fluxo (Período A) e das 5 últimas medições dele. O contrato completo está em <code>Entrega_04_11/RandomForest/metadados.json</code>.</p>
+  <p>Em produção, esse arquivo (<code>random_forest_nov2026.joblib</code>, 462 MB) fica carregado em memória no Space <a href="https://huggingface.co/spaces/GSchmiidt/preditor-redes-api" target="_blank" rel="noopener"><code>GSchmiidt/preditor-redes-api</code></a> no Hugging Face, respondendo via API REST (<code>POST https://gschmiidt-preditor-redes-api.hf.space/gradio_api/call/predict</code>) para o mapa interativo na Vercel (<code>/api/rf-predict</code>). Abaixo também está a forma direta de carregá-lo localmente em Python:</p>
   <div class="pre-h"><span>Python</span><button class="copiar" data-alvo="cod-modelo">Copiar</button></div>
 <pre id="cod-modelo"><code><span class="k">import</span> joblib, pandas <span class="k">as</span> pd
 
