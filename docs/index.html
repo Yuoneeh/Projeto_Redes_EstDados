@@ -402,8 +402,8 @@ footer.rodape a { color: var(--cyan); }
   <ol>
     <li><a href="#introducao"><span>1</span>Introdução</a></li>
     <li><a href="#problema"><span>2</span>O problema e quem usa</a></li>
-    <li><a href="#dados"><span>3</span>Os dados</a></li>
-    <li><a href="#sistema"><span>4</span>Como o sistema funciona</a></li>
+    <li><a href="#sistema"><span>3</span>Como o sistema funciona</a></li>
+    <li><a href="#dados"><span>4</span>Os dados</a></li>
     <li><a href="#modelos"><span>5</span>Os modelos em árvore</a></li>
     <li><a href="#resultados"><span>6</span>Resultados e comparação</a></li>
     <li><a href="#destaque"><span>7</span>Destaque: o melhor modelo</a></li>
@@ -447,8 +447,30 @@ footer.rodape a { color: var(--cyan); }
       <dt>Pergunta</dt><dd>Daqui a 12 minutos, este caminho estará <span class="tag ok">OK</span> <span class="tag risco">RISCO</span> ou <span class="tag falha">FALHA</span>?</dd>
       <dt>Dados</dt><dd>Pings públicos do RIPE Atlas, a cada 4 minutos, durante 14 dias, em 157 caminhos de 14 rotas.</dd>
       <dt>Modelos</dt><dd>Árvore de Decisão (também implementada à mão, em Estrutura de Dados II) e Random Forest, o modelo entregue.</dd>
-      <dt>Resultado</dt><dd>A Random Forest teve o melhor F1 macro do projeto no teste (0,584, contra 0,581 da árvore). Os dois modelos acertam quase sempre quando a rede mantém o estado e quase nunca quando ela muda de repente.</dd>
+      <dt>Resultado</dt><dd>A Random Forest teve o melhor F1 macro do projeto no teste (0,584, contra 0,581 da árvore) e hoje roda em produção, no Hugging Face. Ela prevê com segurança quando um problema vai continuar nos próximos 12 minutos; antecipar mudanças bruscas é o próximo passo.</dd>
     </dl>
+  </div>
+  <h3>Glossário rápido</h3>
+  <div class="tabela-wrap">
+    <table>
+      <thead><tr><th>Termo</th><th>O que é</th></tr></thead>
+      <tbody>
+        <tr><td>Ping (ICMP)</td><td>Mensagem <em>Echo Request</em> enviada a um destino, que responde com um <em>Echo Reply</em>. Mostra se houve resposta e quanto tempo ela levou.</td></tr>
+        <tr><td>RTT</td><td>Tempo de ida e volta do ping, em milissegundos.</td></tr>
+        <tr><td>Medição</td><td>O resultado de um ping num instante: horário, RTT, jitter e perda. Cada medição é uma linha do conjunto de dados.</td></tr>
+        <tr><td>Enlace</td><td>A ligação entre dois equipamentos de rede (um cabo, uma fibra, um rádio). Um caminho na internet atravessa vários enlaces.</td></tr>
+        <tr><td>Fluxo</td><td>O par sonda de origem → endereço de destino. É a unidade do projeto: cada fluxo tem o seu próprio normal.</td></tr>
+        <tr><td>Rota</td><td>O par país de origem → país de destino (por exemplo, US-BR). Agrupa vários fluxos.</td></tr>
+        <tr><td>Monitorar × prever</td><td>Monitorar diz como o caminho está agora. Prever diz como ele estará daqui a 12 minutos, a tempo de agir.</td></tr>
+        <tr><td>Linha de base</td><td>O normal de cada fluxo, aprendido em 7 dias de dados: a mediana do RTT e a sua dispersão (MAD).</td></tr>
+        <tr><td><code>z_robusto</code></td><td>Quantos "desvios típicos" a medição atual está acima do normal do fluxo: (RTT − mediana) ÷ (1,4826 × MAD). Usa mediana e MAD porque eles não se deixam levar por picos isolados, ao contrário da média e do desvio padrão.</td></tr>
+        <tr><td>Modelo de predição</td><td>Programa treinado com exemplos do passado. Recebe as 8 variáveis de uma medição e devolve a classe prevista: OK, RISCO ou FALHA.</td></tr>
+        <tr><td>Gini</td><td>Medida de mistura de um grupo: 0 quando todas as linhas são da mesma classe. Em cada nó, a árvore escolhe a pergunta que mais reduz o Gini.</td></tr>
+        <tr><td>Variância</td><td>Em estatística, a média dos quadrados das distâncias até a média: mede o quanto os valores se espalham. Num modelo, é o quanto ele muda quando os dados de treino mudam um pouco; a floresta reduz a variância da árvore única fazendo 100 árvores votarem.</td></tr>
+        <tr><td>Persistência</td><td>Referência simples: prever que daqui a 12 minutos o estado será o mesmo de agora. Aparece nos gráficos como a régua que o modelo precisa alcançar e superar.</td></tr>
+        <tr><td>Matriz de confusão</td><td>Tabela que cruza a classe real (linhas) com a prevista (colunas). A diagonal são os acertos; o resto mostra qual erro o modelo comete, por exemplo uma FALHA prevista como OK.</td></tr>
+      </tbody>
+    </table>
   </div>
   <a class="video-card" href="https://youtu.be/h0cTuHPZZOc" target="_blank" rel="noopener">
     <span class="play" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M5 3l12 7-12 7z"/></svg></span>
@@ -481,8 +503,35 @@ footer.rodape a { color: var(--cyan); }
 </section>
 
 <!-- 3 -->
+<section class="secao" id="sistema">
+  <h2><span class="num">3</span>Como o sistema funciona</h2>
+  <p>Antes dos detalhes, a visão geral. O projeto é um pipeline em três camadas: coletar os pings, comparar cada medição com o normal do seu <strong>fluxo</strong> (o par sonda de origem → destino) e prever o estado de 12 minutos depois. Cada camada gera arquivos que a próxima lê, e cada etapa pode ser auditada no repositório. A seção 4 detalha os dados de cada camada.</p>
+  <figure class="fig wide">
+    <p class="fig-t">Figura 1. Do ping à classe prevista</p>
+    <div class="pipeline">
+      <div class="camada"><b>Camada 1</b><small>Coleta (Redes)</small>
+        <div class="passo"><b>API do RIPE Atlas</b><span>pings do mesh, a cada 240 s</span></div>
+        <div class="passo"><b>coletor_mesh.py</b><span>retentativas, 1 dia por pedido, sem rótulos</span></div>
+        <div class="passo"><b>ripe_mesh_ping.csv</b><span>uma linha por medição + metadados</span></div>
+      </div>
+      <div class="camada"><b>Camada 2</b><small>Baseline e rótulos</small>
+        <div class="passo"><b>Ficha por fluxo</b><span>mediana, MAD, jitter típico (Período A)</span></div>
+        <div class="passo"><b>8 variáveis relativas + classe</b><span>Período B, regras em ordem</span></div>
+        <div class="passo"><b>Rótulo de 12 min à frente</b><span>divisão temporal 50 / 20 / 30</span></div>
+      </div>
+      <div class="camada"><b>Camada 3</b><small>Modelos (Estrutura de Dados II)</small>
+        <div class="passo"><b>Árvore de Decisão</b><span>implementação manual e scikit-learn</span></div>
+        <div class="passo"><b>Random Forest</b><span>100 árvores, modelo entregue em 04/11</span></div>
+        <div class="passo final"><b>Classe prevista</b><span>OK, RISCO ou FALHA em 12 min; teste medido uma vez</span></div>
+      </div>
+    </div>
+    <figcaption><b>Como ler:</b> as setas seguem o caminho dos dados, de cima para baixo em cada camada e da esquerda para a direita entre camadas.</figcaption>
+  </figure>
+</section>
+
+<!-- 4 -->
 <section class="secao" id="dados">
-  <h2><span class="num">3</span>Os dados: origem, variáveis, limpeza e tratamento</h2>
+  <h2><span class="num">4</span>Os dados: origem, variáveis, limpeza e tratamento</h2>
   <h3>De onde vêm</h3>
   <p>Usamos o <a href="https://atlas.ripe.net/" target="_blank" rel="noopener">RIPE Atlas</a>, uma rede mundial de sondas que medem a internet o tempo todo. Os servidores fixos dessa rede, chamados <em>anchors</em>, fazem ping uns nos outros a cada 240 segundos (o <em>anchoring mesh</em>), e os resultados são públicos.</p>
   <p>Nosso coletor (<code>src/coletor_mesh.py</code>) só lê dados com <code>GET</code>: não cria medições e não gasta créditos. Escolhemos 14 rotas entre países, de origens em 8 países (AR, BR, DE, ES, IN, NL, US, ZA) para destinos em 12 (AR, BO, BR, DE, IN, JP, KE, PL, PT, SG, UY, ZA). Cada par <em>sonda de origem → IP de destino</em> é um <strong>fluxo</strong>, a unidade de todo o projeto.</p>
@@ -494,7 +543,7 @@ footer.rodape a { color: var(--cyan); }
   </div>
 
   <figure class="fig wide" id="fig-medianas">
-    <p class="fig-t">Figura 1. O "normal" de cada fluxo é muito diferente</p>
+    <p class="fig-t">Figura 2. O "normal" de cada fluxo é muito diferente</p>
     <p class="fig-s">Mediana do tempo de ida e volta (RTT) de cada fluxo no Período A, em milissegundos.</p>
     <div class="chart" id="chart-medianas"></div>
     <figcaption><b>Como ler:</b> cada barra é um fluxo, do mais rápido para o mais lento. O normal vai de menos de 1 ms (dentro do Brasil) a 385 ms (Brasil → África do Sul). Por isso um limite global de latência não funciona, e o projeto compara cada medição com o normal do próprio fluxo.</figcaption>
@@ -560,37 +609,10 @@ footer.rodape a { color: var(--cyan); }
   <p>A divisão também respeita o tempo: em cada fluxo, os 50% mais antigos vão para treino, os 20% seguintes para validação e os 30% mais recentes para teste. Sortear linhas ao acaso misturaria passado e futuro e inflaria as notas.</p>
 
   <figure class="fig wide" id="fig-blocos">
-    <p class="fig-t">Figura 2. A maior parte do tempo, a rede está OK</p>
+    <p class="fig-t">Figura 3. A maior parte do tempo, a rede está OK</p>
     <p class="fig-s">Distribuição do rótulo de 12 minutos à frente em cada bloco da divisão temporal.</p>
     <div class="chart" id="chart-blocos"></div>
     <figcaption><b>Como ler:</b> nos três blocos, OK fica entre 79% e 83% das linhas, FALHA entre 10% e 13% e RISCO entre 7% e 8%. Um modelo que sempre responde "OK" já acerta 83% no teste, então a acurácia sozinha engana. Por isso avaliamos com F1 macro e recall por classe.</figcaption>
-  </figure>
-</section>
-
-<!-- 4 -->
-<section class="secao" id="sistema">
-  <h2><span class="num">4</span>Como o sistema funciona</h2>
-  <p>O projeto é um pipeline em três camadas. Cada uma gera arquivos que a próxima lê, e cada etapa pode ser auditada no repositório.</p>
-  <figure class="fig wide">
-    <p class="fig-t">Figura 3. Do ping à classe prevista</p>
-    <div class="pipeline">
-      <div class="camada"><b>Camada 1</b><small>Coleta (Redes)</small>
-        <div class="passo"><b>API do RIPE Atlas</b><span>pings do mesh, a cada 240 s</span></div>
-        <div class="passo"><b>coletor_mesh.py</b><span>retentativas, 1 dia por pedido, sem rótulos</span></div>
-        <div class="passo"><b>ripe_mesh_ping.csv</b><span>uma linha por medição + metadados</span></div>
-      </div>
-      <div class="camada"><b>Camada 2</b><small>Baseline e rótulos</small>
-        <div class="passo"><b>Ficha por fluxo</b><span>mediana, MAD, jitter típico (Período A)</span></div>
-        <div class="passo"><b>8 variáveis relativas + classe</b><span>Período B, regras em ordem</span></div>
-        <div class="passo"><b>Rótulo de 12 min à frente</b><span>divisão temporal 50 / 20 / 30</span></div>
-      </div>
-      <div class="camada"><b>Camada 3</b><small>Modelos (Estrutura de Dados II)</small>
-        <div class="passo"><b>Árvore de Decisão</b><span>implementação manual e scikit-learn</span></div>
-        <div class="passo"><b>Random Forest</b><span>100 árvores, modelo entregue em 04/11</span></div>
-        <div class="passo final"><b>Classe prevista</b><span>OK, RISCO ou FALHA em 12 min; teste medido uma vez</span></div>
-      </div>
-    </div>
-    <figcaption><b>Como ler:</b> as setas seguem o caminho dos dados, de cima para baixo em cada camada e da esquerda para a direita entre camadas.</figcaption>
   </figure>
 </section>
 
@@ -862,12 +884,12 @@ footer.rodape a { color: var(--cyan); }
   </div>
   <p>Retreinada aqui, a configuração entregue marca 0,611 na validação, contra 0,610 do arquivo entregue. A diferença vem da versão do scikit-learn: as previsões das duas coincidem em 99,7% do teste.</p>
 
-  <h3>Onde ele ainda erra</h3>
+  <h3>Onde ele pode evoluir</h3>
   <ul>
-    <li><strong>A falha que está começando.</strong> Das 5.237 FALHAs que a floresta previu como OK, 3.967 (76%) estavam OK no momento da previsão. Ela reconhece bem a falha que continua (acerta 87% delas), mas antecipou só 18 das 4.010 que começaram.</li>
-    <li><strong>RISCO.</strong> Encontra só 9,4% dos RISCOs. É a classe mais rara, fica entre as outras duas e é definida por sinais fracos combinados.</li>
-    <li><strong>Tamanho e velocidade.</strong> As árvores sem limite deixam o arquivo com 462 MB, tanto que ele teve de ir para o Google Drive. Cada previsão de uma linha leva 24 ms, contra 0,4 ms da árvore única.</li>
-    <li><strong>Empate com a persistência.</strong> Repetir o estado atual dá F1 macro de 0,583, praticamente o mesmo 0,584 da floresta. Pelo critério 3 do RFC, enquanto o modelo não superar essa referência, o sistema deve ser apresentado como um <strong>detector</strong> de degradação em andamento, e não como um preditor do início da falha.</li>
+    <li><strong>Antecipar a falha que surge do zero.</strong> A floresta é forte em prever que uma degradação vai continuar: acerta 87% das FALHAs que já estavam em andamento. O desafio agora é a falha que começa sem nenhum sinal anterior. Das 4.010 passagens de OK para FALHA no teste, ela antecipou 18, e é nesse ponto que os próximos passos se concentram.</li>
+    <li><strong>RISCO, a classe mais sutil.</strong> É a mais rara, fica entre as outras duas e aparece por sinais fracos combinados. A floresta encontra 9,4% dos RISCOs, mais que a árvore única (8,6%), e ainda tem espaço para crescer.</li>
+    <li><strong>Tamanho e velocidade.</strong> Com árvores sem limite de profundidade, o arquivo tem 462 MB e cada previsão leva 24 ms. Mesmo assim, o modelo roda em produção: está hospedado no Hugging Face e responde em tempo real ao mapa interativo (seção 9).</li>
+    <li><strong>No patamar da persistência.</strong> Em redes, repetir o estado atual é uma referência difícil de bater, porque o estado muda pouco em 12 minutos: ela marca 0,583 de F1 macro. A floresta alcança 0,584 e traz algo que a persistência não tem: um grau de confiança. Quando mais de 90% das árvores concordam, o acerto chega a 93%. Superar essa referência com folga é a meta da próxima versão.</li>
   </ul>
 </section>
 
@@ -984,31 +1006,26 @@ print({<span class="s">"previsao_12min"</span>: modelo.predict(entrada)[0],
   <h3>O que o painel mostra</h3>
   <ul>
     <li><strong>O globo:</strong> o caminho entre a origem e o alvo, colorido pela classe prevista: verde para OK, amarelo para RISCO e vermelho para FALHA.</li>
-    <li><strong>As variáveis do modelo:</strong> z robusto, jitter relativo e as janelas das últimas medições, calculados com as mesmas fórmulas da Tarefa 2.</li>
+    <li><strong>As variáveis do modelo:</strong> z robusto, jitter relativo e as janelas das últimas medições, calculados com as mesmas fórmulas da Tarefa 2 (seção 4).</li>
     <li><strong>A linha do tempo:</strong> cada medição entra numa fila com as últimas 24 do fluxo, guardada num mapa (tabela hash) por <code>fluxo_id</code>. É dessa fila que saem as janelas n5.</li>
     <li><strong>A classificação:</strong> feita pelo modelo <strong>Random Forest</strong> (100 árvores, arquivo <code>random_forest_nov2026.joblib</code>) hospedado via API no Hugging Face Spaces, consumido em tempo real pela rota <code>/api/rf-predict</code>.</li>
   </ul>
   <h3>Como o mapa funciona por trás dos panos</h3>
   <ol>
-    <li><strong>Descobrir onde você está no mapa (Ponto de Origem):</strong> ao abrir o site, seu navegador descobre qual é o seu endereço público de internet (IP) e consulta um serviço de localização (<code>ip-api.com</code>) para saber em qual cidade e país esse endereço está. É assim que o globo coloca o pino de partida na sua região, e não no servidor onde o site está hospedado.</li>
-    <li><strong>Localizar o destino e desenhar a rota:</strong> quando você digita um site ou IP (como <code>google.com</code> ou <code>8.8.8.8</code>), o sistema traduz esse nome para o endereço numérico do servidor e descobre em qual cidade do mundo ele fica. Com os dois pontos geográficos em mãos, o mapa desenha o arco 3D ligando você ao destino.</li>
-    <li><strong>Medir o "pulso" da conexão ao vivo:</strong> de tempos em tempos, o servidor do aplicativo envia um teste rápido até o destino (como "bater na porta" para cronometrar a resposta) e anota três sinais vitais:
+    <li><strong>Ponto de origem:</strong> ao abrir o site, o navegador descobre o seu endereço público de internet (IP) e consulta um serviço de localização (<code>ip-api.com</code>). É assim que o globo coloca o pino de partida na sua região.</li>
+    <li><strong>Destino e rota:</strong> quando você digita um site ou IP (como <code>google.com</code> ou <code>8.8.8.8</code>), o sistema traduz o nome para o endereço numérico, descobre em que cidade ele fica e desenha o arco no globo entre os dois pontos.</li>
+    <li><strong>Medição ao vivo, a cada 2,8 segundos:</strong> o servidor do aplicativo tenta abrir uma conexão TCP com o destino (portas 443, 80 ou 53) e cronometra o aperto de mão. Se nenhuma porta responder, tenta um ping ICMP. Se o destino bloquear os dois, o painel usa uma estimativa de latência calculada pela distância geográfica. Da medição saem:
       <ul>
-        <li><strong>Latência (RTT):</strong> quanto tempo, em milissegundos, o sinal levou para ir e voltar.</li>
-        <li><strong>Jitter (oscilação):</strong> se o tempo de resposta está firme ou variando muito entre uma medição e outra.</li>
-        <li><strong>Perda de pacotes:</strong> se o sinal falhou ou demorou tanto que deu timeout.</li>
+        <li><strong>Latência (RTT):</strong> quanto tempo o sinal levou para ir e voltar.</li>
+        <li><strong>Jitter:</strong> a diferença entre o RTT desta medição e o da anterior.</li>
       </ul>
     </li>
-    <li><strong>Aprender o "normal" daquela rota (em vez de usar regra fixa):</strong> uma conexão até o Japão naturalmente demora bem mais do que uma conexão dentro de São Paulo — e isso não significa defeito. Por isso, nas primeiras 5 medições, o app aprende qual é o comportamento padrão daquela rota específica. A partir daí, cada nova medição é comparada com esse padrão para gerar 8 notas de comportamento (como quantos % a lentidão subiu, quantas vezes a oscilação piorou em relação ao normal e quantas vezes isso se repetiu nas últimas 5 checagens).</li>
-    <li><strong>O "júri" da Inteligência Artificial dá o veredito na tela:</strong> essas 8 notas são enviadas pela internet até o nosso modelo <strong>Random Forest</strong> hospedado no Hugging Face. Pense nele como um júri com 100 especialistas (árvores de decisão) que já estudaram milhares de falhas reais da internet:
-      <ul>
-        <li>Cada uma das 100 árvores olha as 8 notas e dá seu voto: <span class="tag ok">OK</span>, <span class="tag risco">RISCO</span> ou <span class="tag falha">FALHA</span> para os próximos 12 minutos (<code>T+12m</code>).</li>
-        <li>O resultado com mais votos vence e volta para o site em instantes.</li>
-      </ul>
-    </li>
+    <li><strong>O normal da rota:</strong> nas 5 primeiras medições, o painel guarda a mediana do RTT como o normal daquele caminho. Como 5 pontos são poucos para medir a variação real, a dispersão (MAD) é estimada em 15% da mediana. No projeto, esse normal vem de 7 dias de dados de cada fluxo (seção 4).</li>
+    <li><strong>As 8 variáveis:</strong> cada medição é comparada com esse normal pelas mesmas fórmulas da seção 4 (<code>z_robusto</code>, aumento percentual, jitter relativo, perda, timeout e as três janelas das últimas 5 medições). As medições ficam numa fila de até 24 por fluxo, guardada num mapa (tabela hash) por <code>fluxo_id</code>.</li>
+    <li><strong>O veredito da Random Forest:</strong> as 8 variáveis são enviadas à API do modelo no Hugging Face. Cada uma das 100 árvores vota em <span class="tag ok">OK</span>, <span class="tag risco">RISCO</span> ou <span class="tag falha">FALHA</span> para os próximos 12 minutos, e a classe mais votada volta para o painel.</li>
   </ol>
-  <p><strong>O que você vê no final:</strong> o arco do globo muda de cor (verde, amarelo ou vermelho), o painel mostra o risco previsto e a linha do tempo registra o motivo daquela decisão.</p>
-  <div class="nota"><b>É uma demonstração.</b> Os números de avaliação do projeto são os das seções 6 e 7. No painel, os cenários simulados de RISCO e FALHA e o percentual de "chance de falha" são ilustrativos. Na medição ao vivo, o ponto de origem no globo usa o IP externo real do visitante (geolocalizado via <code>ip-api.com</code>), enquanto os testes de latência (TCP Handshake / ICMP) partem do servidor que hospeda a aplicação até o alvo escolhido.</div>
+  <p><strong>O que você vê no final:</strong> o arco do globo muda de cor, o painel mostra a classe prevista e a linha do tempo registra cada medição com o motivo da decisão.</p>
+  <div class="nota"><b>Ao vivo e demonstração.</b> Só a medição ao vivo passa pela Random Forest. Os botões <b>Estável</b>, <b>Risco</b> e <b>Falha</b> carregam medições de exemplo, com valores típicos de cada estado, para mostrar como o painel reage, sem consultar o modelo. O percentual de "chance de falha" é uma escala visual derivada da classe prevista, e não uma probabilidade calculada pelo modelo. Os números de avaliação do projeto são os das seções 6 e 7.</div>
   <script>
     (function () {
       var b = document.getElementById("mapa-tela-cheia"), m = document.getElementById("mapa-moldura");
@@ -1030,7 +1047,7 @@ print({<span class="s">"previsao_12min"</span>: modelo.predict(entrada)[0],
   <h2><span class="num">10</span>Limitações e próximos passos</h2>
   <h3>Limitações</h3>
   <ul>
-    <li><strong>Hoje, um detector.</strong> O modelo reconhece uma degradação em andamento, mas quase nunca antecipa a passagem de OK para FALHA (Figura 8), e não supera a persistência. Pelo critério 3 do RFC, é assim que o sistema deve ser apresentado.</li>
+    <li><strong>Antecipar a mudança brusca.</strong> O modelo prevê bem quando um estado vai se manter nos próximos 12 minutos. A passagem repentina de OK para FALHA, sem sinais anteriores, ainda é o ponto mais difícil (Figura 8), e superar com folga a referência de persistência é a principal meta da próxima versão.</li>
     <li><strong>Rompimento físico.</strong> Um cabo cortado sem nenhum sinal prévio na latência não pode ser previsto por nenhum modelo baseado nesses sinais.</li>
     <li><strong>O rótulo é sensível em caminhos muito estáveis.</strong> Como 95% das FALHAs vêm do <code>z_robusto</code>, um aumento de poucos milissegundos já conta como FALHA num fluxo de variação baixíssima.</li>
     <li><strong>A ficha do normal é fixa.</strong> Se o caminho muda de rota entre o Período A e o B, o fluxo inteiro parece anômalo. Três fluxos ficaram com mais de 96% das linhas em FALHA. O RFC prevê uma classe RECALIBRAR para esse caso, ainda não implementada.</li>
@@ -1052,7 +1069,7 @@ print({<span class="s">"previsao_12min"</span>: modelo.predict(entrada)[0],
 <section class="secao" id="conclusao">
   <h2><span class="num">11</span>Conclusão</h2>
   <p>Construímos um pipeline completo e auditável: coleta pela API do RIPE Atlas, normal aprendido por fluxo, variáveis relativas, rótulo de 12 minutos à frente e divisão temporal sem vazamento. Sobre essa base, a árvore de decisão (implementada à mão e no scikit-learn) e a Random Forest foram avaliadas nas mesmas condições.</p>
-  <p>A Random Forest entregue teve o melhor resultado do projeto no teste (F1 macro de 0,584) e encontrou mais FALHAs e RISCOs que a árvore única. Os dois modelos, porém, ficaram empatados com uma regra que repete o estado atual: eles reconhecem a falha que já começou, não a que vai começar. O limite hoje não está no algoritmo, e sim no que as variáveis atuais permitem antecipar com 12 minutos de antecedência. Os próximos passos atacam exatamente esse ponto.</p>
+  <p>A Random Forest entregue teve o melhor resultado do projeto no teste (F1 macro de 0,584), encontrou mais FALHAs e RISCOs que a árvore única e hoje roda em produção, hospedada no Hugging Face e consultada em tempo real pelo mapa interativo. Ela prevê com confiança quando uma degradação vai continuar nos próximos 12 minutos, e acerta 93% das vezes em que as árvores concordam. Antecipar a falha que surge sem nenhum sinal anterior é o próximo desafio: o limite está no que as variáveis atuais mostram com 12 minutos de antecedência, e os próximos passos atacam exatamente esse ponto.</p>
 </section>
 
 <!-- Links -->
@@ -1063,7 +1080,8 @@ print({<span class="s">"previsao_12min"</span>: modelo.predict(entrada)[0],
       <li><b>Repositório do projeto</b><a href="https://github.com/Yuoneeh/Projeto_Redes_EstDados" target="_blank" rel="noopener">github.com/Yuoneeh/Projeto_Redes_EstDados</a></li>
       <li><b>Repositório do artigo</b><a href="https://github.com/Yuoneeh/Artigo_Preditor_de_redes" target="_blank" rel="noopener">github.com/Yuoneeh/Artigo_Preditor_de_redes</a></li>
       <li><b>Vídeo pitch (90 s)</b><a href="https://youtu.be/h0cTuHPZZOc" target="_blank" rel="noopener">youtu.be/h0cTuHPZZOc</a></li>
-      <li><b>Modelo Random Forest entregue em 04/11</b><a href="https://drive.google.com/file/d/1uBp4ld-l_ujSkFI9Oqy8PaOayE7_HYCT/view?usp=sharing" target="_blank" rel="noopener">Google Drive</a></li>
+      <li><b>Modelo Random Forest em produção (API)</b><a href="https://huggingface.co/spaces/GSchmiidt/preditor-redes-api" target="_blank" rel="noopener">Hugging Face Spaces</a></li>
+      <li><b>Arquivo do modelo entregue em 04/11</b><a href="https://drive.google.com/file/d/1uBp4ld-l_ujSkFI9Oqy8PaOayE7_HYCT/view?usp=sharing" target="_blank" rel="noopener">Google Drive</a></li>
       <li><b>Site Interativo Sobre Predição de Redes (Mapa Mundi)</b><a href="https://gs-redes.vercel.app/" target="_blank" rel="noopener">Mapa Mundi Preditor de Redes</a></li>
       
     </ul>

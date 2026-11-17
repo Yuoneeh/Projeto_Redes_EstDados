@@ -385,7 +385,7 @@ export default function Hero() {
           jitter: simulatedJitter,
           loss: 0,
           status: "RISCO",
-          reason: "Alerta Antecipado da IA (T+12 min): Jitter relativo (3.47) e acúmulo de instabilidade (n5_risco=2) antecipam degradação da rota.",
+          reason: "Cenário de demonstração (RISCO): Jitter relativo (3.47) e acúmulo de instabilidade (n5_risco=2) antecipam degradação da rota.",
         },
       ]);
       return;
@@ -421,7 +421,7 @@ export default function Hero() {
           jitter: 0,
           loss: 100,
           status: "FALHA",
-          reason: "Perigo Crítico (T+12 min): Perda massiva de 100% dos pacotes e timeout consecutivo detectados.",
+          reason: "Cenário de demonstração (FALHA): Perda massiva de 100% dos pacotes e timeout consecutivo detectados.",
         },
       ]);
       return;
@@ -459,7 +459,7 @@ export default function Hero() {
           jitter: simulatedJitter,
           loss: 0,
           status: "OK",
-          reason: "Operação Nominal: A rota opera com dispersão mínima e sem perda de pacotes, confirmando estabilidade futura.",
+          reason: "Cenário de demonstração (OK): A rota opera com dispersão mínima e sem perda de pacotes, confirmando estabilidade futura.",
         },
       ]);
       return;
@@ -670,7 +670,7 @@ export default function Hero() {
                   Predição de Falha da IA
                 </h4>
                 <p className="text-xs text-[#93a4b8] font-sans">
-                  Previsão para T+12 min (Árvore de Decisão)
+                  Previsão para T+12 min (Random Forest)
                 </p>
               </div>
             </div>
@@ -710,7 +710,7 @@ export default function Hero() {
 
               <div className="text-right hidden sm:block">
                 <span className="text-[10px] text-[#93a4b8] font-mono block">F1-Score</span>
-                <span className="text-xs font-mono font-bold text-cyan-400">0.562 (Teste)</span>
+                <span className="text-xs font-mono font-bold text-cyan-400">0.584 (Teste)</span>
               </div>
             </div>
 
