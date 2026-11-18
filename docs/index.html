@@ -151,6 +151,7 @@ p code, li code, dd code, figcaption code { overflow-wrap: anywhere; }
 .btn-line { border-color: rgba(255,255,255,.25); color: var(--on-navy); }
 .btn-line:hover { background: rgba(255,255,255,.08); color: #fff; }
 .hero-logo { width: 220px; border-radius: 22px; box-shadow: 0 20px 50px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.08); }
+@media (max-width: 720px) { .hero-in { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 40px 56px; } .hero-logo { order: -1; width: 96px; border-radius: 16px; } }
 
 /* ---------- artigo ---------- */
 main { padding-block: 8px 40px; }
